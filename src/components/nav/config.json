@@ -1,0 +1,31 @@
+{
+  "home": {
+    "cssClass": "my-custom-class",
+    "langs": {
+      "es": "Inicio",
+      "en": "Home"
+    },
+    "icon": "home",
+    "to": "/"
+  },
+  "favorite": {
+    "cssClass": "my-custom-class",
+    "langs": {
+      "es": "Favorito",
+      "en": "Favorite"
+    },
+    "dashboardId": "",
+    "icon": "start",
+    "to": "/dashboard/"
+  },
+  "dashboards": {
+    "cssClass": "my-custom-class",
+    "name": "Dashboards",
+    "langs": {
+      "es": "Dashboards",
+      "en": "Dashboards"
+    },
+    "icon": "dashboard",
+    "children": {}
+  }
+}

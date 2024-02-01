@@ -1,0 +1,58 @@
+[
+    {
+      "id": 1,
+      "name": "bar",
+      "types": ["bar", "BarChart", "mixed", "timeseries", "timeChart"],
+      "icon": "chart-bar",
+      "children": []
+    },
+    {
+      "id": 2,
+      "name": "line",
+      "types": ["line", "LineChart", "area", "mixed", "timeseries"],
+      "icon": "chart-line",
+      "children": []
+    },
+    {
+      "id": 3,
+      "name": "circular",
+      "types": ["pie", "doughnut", "rosetype"],
+      "icon": "pie-chart",
+      "children": []
+    },
+    {
+      "id": 4,
+      "name": "radar",
+      "types": ["radar"],
+      "icon": "chart-bar",
+      "children": []
+    },
+    {
+      "id": 5,
+      "name": "kpi",
+      "types": ["kpi", "kpis", "progress", "carousel"],
+      "icon": "app",
+      "children": []
+    },
+    {
+      "id": 6,
+      "name": "map",
+      "types": ["map", "map-openLayers"],
+      "icon": "map",
+      "children": []
+    },
+    {
+      "id": 7,
+      "name": "table",
+      "types": ["table", "gadget-crud", "gadget-import"],
+      "icon": "table",
+      "children": []
+    },
+    {
+      "id": 8,
+      "name": "layout",
+      "types": ["header", "footer", "info"],
+      "icon": "table",
+      "children": []
+    }
+  ]
