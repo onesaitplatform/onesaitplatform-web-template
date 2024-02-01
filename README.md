@@ -14,7 +14,10 @@ The menus, initial screens and access to components are managed from a component
 
 We will give users access to the different resources from the application defined in the platform, which is the space between users that allows sharing resources and making progressive development.
 
+In order to carry out the installation it is necessary to have the ODS library token. Since this library is not open source.
+To obtain it, contact those responsible for the platform through email support@onesaitplatform.com.
 
+The Node version to use is v16.20.2.
 
 ## Project setup
 ```
