@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
+    <link rel="icon" type="image/x-icon" href="/web/<%= process.env.VUE_APP_APPLICATION %>/favicon.ico">    
+    <title><%= process.env.VUE_APP_APPLICATION %> App</title>
+    <% if (process.env.NODE_ENV === 'development'){ %>
+    <!-- MAIN SCRIPTS DEV -->
+    <script type="application/javascript" src="<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/scripts/vendor.js"></script>
+    <script type="application/javascript" src="<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/gridster.js"></script>
+        
+    <style>
+    /**
+      * COMMON CSS LIBS
+      */
+      @import "<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/styles/vendor.css";
+      @import "<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/gridster.css";
+      @import "<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/styles/app.css";
+      @import "<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/vendor/onesait-ds/lib/theme-onesait/index.css";
+     
+    </style>
+    <% } %>   
+    <% if (process.env.NODE_ENV === 'production'){ %>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://openlayers.org; font-src 'self'; img-src 'self' <%= process.env.VUE_APP_PLATFORM %> https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org data: "/>
+    <!-- MAIN SCRIPTS PROD -->
+    <script type="application/javascript" src="<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/scripts/vendor.js"></script>
+    <script type="application/javascript" src="<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/gridster.js"></script>
+    <style>
+      /**
+      * @license
+      * MyFonts Webfont Build ID 3912350, 2020-06-10T09:46:56-0400
+      * 
+      * The fonts listed in this notice are subject to the End User License
+      * Agreement(s) entered into by the website owner. All other parties are 
+      * explicitly restricted from using the Licensed Webfonts(s).
+      * 
+      * You may obtain a valid license at the URLs below.
+      * 
+      * Webfont: SohoGothicPro-Regular by Monotype
+      * URL: https://www.myfonts.com/fonts/mti/soho-gothic/pro-regular/
+      * 
+      * Webfont: SohoGothicPro-Italic by Monotype
+      * URL: https://www.myfonts.com/fonts/mti/soho-gothic/pro-italic/
+      * 
+      * Webfont: SohoGothicPro-Medium by Monotype
+      * URL: https://www.myfonts.com/fonts/mti/soho-gothic/pro-medium/
+      * 
+      * Webfont: SohoGothicPro-MediumItalic by Monotype
+      * URL: https://www.myfonts.com/fonts/mti/soho-gothic/pro-medium-italic/
+      * 
+      * Webfont: SohoGothicPro-Bold by Monotype
+      * URL: https://www.myfonts.com/fonts/mti/soho-gothic/pro-bold/
+      * 
+      * Webfont: SohoGothicPro-Light by Monotype
+      * URL: https://www.myfonts.com/fonts/mti/soho-gothic/pro-light/
+      * 
+      * 
+      * Webfonts copyright: Copyright (c) 2007 Monotype Imaging Inc. Soho is designed by Sebastian Lester. All rights reserved.
+      * URL: https://hello.myfonts.net/count/3bb29e      
+      */
+
+      /**
+      * COMMON CSS LIBS
+      */
+      @import "<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/styles/vendor.css";
+      @import "<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/gridster.css";
+      @import "<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/styles/app.css";
+      @import "<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/vendor/onesait-ds/lib/theme-onesait/index.css";
+
+    </style>
+    <% } %>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
