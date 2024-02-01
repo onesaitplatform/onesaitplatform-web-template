@@ -324,25 +324,6 @@ export default {
         "editmode",
         scope.editmode ? scope.editmode : "false"
       );
-      //hide styling button
-      var styleSheet = document.styleSheets[document.styleSheets.length - 1];
-
-      var ruleNum = styleSheet.cssRules.length;
-      if (scope.editmode) {
-        if (styleSheet) {
-          styleSheet.insertRule(
-            "md-menu-content > md-menu-item:nth-child(2){display:none !important;}",
-            ruleNum
-          );
-        }
-      } else {
-        if (styleSheet) {
-          styleSheet.insertRule(
-            "md-menu-content > md-menu-item:nth-child(2){display:block !important;}",
-            ruleNum
-          );
-        }
-      }
 
       if (i18n == true) {
         fetch(
