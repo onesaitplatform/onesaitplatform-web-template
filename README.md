@@ -17,7 +17,7 @@ We will give users access to the different resources from the application define
 In order to carry out the installation it is necessary to have the **ODS library** token. Since this library is not open source.
 To obtain it, contact those responsible for the platform through email support@onesaitplatform.com.
 
-The **conf folder** contains the json files, to be able to create the centralized configuration and internationalization.
+The **config folder** contains the json files, to be able to create the centralized configuration and internationalization.
 
 The **Node version** to use is **v16.20.2**.
 
