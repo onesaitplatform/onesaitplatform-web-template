@@ -1,0 +1,99 @@
+[
+    {
+        "realmId": "write the realm identifier here",
+        "clientId": "write the realm identifier here",
+        "secret": "write here secret of the realm",
+        "title": "write the title of the application here",
+        "i18n": "write here the identifier of the internationalization of the application",
+        "project": "write here the identifier of the application created on onesait platform",
+        "productInfo": {
+            "suite": "platform",
+            "product": "Onesait Platform",
+            "productModule": " ",
+            "secondary": false,
+            "negative": false,
+            "simple": false,
+            "onesait": false,
+            "accentBlock": false
+        },
+        "pluginsOpts": {
+            "filterDatasources": {}
+        },
+        "appVersion": 0,
+        "customization": {
+            "showActiveFilters": false,
+            "showFilters": false,
+            "showFavorites": false,
+            "user": {
+                "showTheme": false,
+                "showLanguage": true
+            },
+            "styles": {
+                "--color-bg-interactive": "#2e4454",
+                "--color-border-interactive": "#2e4454",
+                "--color-bg-interactive-soft": "#2e4454",
+                "--color-bg-hover-2": "#c8e0de"
+            }
+        },
+        "globalFilters": [],
+        "initialNavigation": [
+            {   
+                "type": "component",
+                "path": "/forms",
+                "role": "roleA",
+                "params": {
+                    "formcode": "write the form-code of the form here"
+                },
+                "id": "Forms"
+            },
+            {
+                "type": "dashboard",
+                "role": "roleB",
+                "id": "write the dashboard identifier here"
+            }
+        ],
+        "navigationAllowed": [
+            {
+                "role": "roleA",
+                "components": [
+                    {
+                        "id": "write the form-code of the form here",
+                        "options": {}
+                    }
+                ]
+            },
+            {
+                "role": "roleB",
+                "components": [
+                    {
+                        "id": "write the form-code of the form here",
+                        "options": {}
+                    }
+                ]
+            }
+        ],
+        "navigation": {
+            "write the form-code of the form here": {
+                "cssClass": "my-custom-class",
+                "langs": {
+                    "es": "",
+                    "en": ""
+                },
+                "icon": "file-add",
+                "type": "component",
+                "componentId": "write the form-code of the form here",
+                "to": "write the form-code of the form here preceded by /forms/ as /forms/form-code/"
+            },
+            "write the dashboard identifier here": {
+                "cssClass": "my-custom-class",
+                "langs": {
+                    "es": "",
+                    "en": ""
+                },
+                "icon": "chart-bar",
+                "dashboardId": "write the dashboard identifier here",
+                "to": "/dashboard/ write here the id of the dashboard such as 380fa796-d1f4-42b7-81d3-4f69c98f3e4c"
+            }
+        }
+    }
+]
