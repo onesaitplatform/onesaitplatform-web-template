@@ -37,6 +37,16 @@ export const createData = async (formid, body) => {
   const data = await response.data
   return data
 }
+
+export const cloneData = async (formid, body) => {
+  body.metadata.formId = formid
+  delete body.metadata.dataId
+  delete body.data.submit
+  const response = await api.platform.post('/forms/clonedata', body)
+  const data = await response.data
+  return data
+}
+
 export const updateData = async (formid, dataoid, body) => {
   body.metadata.formId = formid
   body.metadata.dataId = dataoid
