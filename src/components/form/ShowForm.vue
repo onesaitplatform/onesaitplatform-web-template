@@ -1,7 +1,9 @@
 <template>
-  <div id="builder" v-show="!loading" style="height: 100%!important;width:100%!important;">
-    <div :id="divIdentifier"></div>
-  </div>
+  <div v-loading="loading" loading-background="transparent" style="width:100%; height:100%; min-height: 500px;">
+    <div id="builder" v-show="!loading" style="height: 100%!important; width:100%!important;">
+      <div :id="divIdentifier"></div>
+    </div>
+</div>
 </template>
 <script>
 import {
@@ -9,8 +11,10 @@ import {
   getData,
   createData,
   updateData,
-  resolveDataSource
+  resolveDataSource,
+  cloneData
 } from '@/services/form/api-opServices'
+
 export default {
   name: 'ShowForm',
   props: {
@@ -22,7 +26,7 @@ export default {
     return {
       divIdentifier: String,
       buildForm: Object,
-      loading: false
+      loading: true
     }
   },
   watch: {
@@ -43,7 +47,8 @@ export default {
         // SHOW FORM
         var that = this
         if (that.formcode != null && that.formcode.length > 0) {
-          if (that.dataoid != null && that.dataoid.length > 0) {
+          window.formId = that.formcode
+          if (that.dataoid != null && that.dataoid.length > 0 && that.dataoid !== 'null') {
             that.initFromDataWithOid(that)
           } else {
             // show existing form without data
@@ -51,6 +56,9 @@ export default {
               .then(function (response) {
                 if (!response.i18nJson) {
                   response.i18nJson = null
+                }
+                if (response?.datasources) {
+                  window.ds = response.datasources
                 }
                 window.Formio.createForm(
                   document.getElementById(that.divIdentifier),
@@ -69,12 +77,16 @@ export default {
                   that.buildForm.on('submit', function (submission) {
                     createData(
                       that.formcode,
-                      that.cleanSubmmision(submission, that)
+                      submission
                     )
-                      .then(function () {
-                        that.buildForm.emit('submitDone', that.cleanSubmmision(submission, that))
+                      .then(function (data) {
+                        if (data.ids && data.ids.length > 0) {
+                          window.resultId = data.ids[0]
+                        }
+                        that.buildForm.emit('submitDone', submission)
                       })
                       .catch(function (error) {
+                        that.buildForm.emit('submitError', error)
                         console.log(error)
                       })
                     document
@@ -118,6 +130,9 @@ export default {
         if (!resp.i18nJson) {
           resp.i18nJson = null
         }
+        if (resp?.datasources) {
+          window.ds = resp.datasources
+        }
         window.Formio.createForm(
           document.getElementById(that.divIdentifier),
           resp.schema, JSON.parse(resp.i18nJson)
@@ -136,17 +151,38 @@ export default {
             that.$router.push({ path: `/forms/${redirecto.formcode}/${redirecto.dataoid}` })
           })
           that.buildForm.on('submit', function (submission) {
-            updateData(
-              that.formcode,
-              that.dataoid,
-              that.cleanSubmmision(submission, that)
-            )
-              .then(function () {
-                that.buildForm.emit('submitDone', that.cleanSubmmision(submission, that))
-              })
-              .catch(function (error) {
-                console.log(error)
-              })
+            if (window.buttonJustCreate) {
+              cloneData(
+                that.formcode,
+                submission
+              )
+                .then(function (data) {
+                  if (data.ids && data.ids.length > 0) {
+                    window.resultId = data.ids[0]
+                  }
+                  that.buildForm.emit('submitDone', submission)
+                })
+                .catch(function (error) {
+                  that.buildForm.emit('submitError', error)
+                  console.log(error)
+                })
+            } else {
+              updateData(
+                that.formcode,
+                that.dataoid,
+                submission
+              )
+                .then(function (data) {
+                  if (data.ids && data.ids.length > 0) {
+                    window.resultId = data.ids[0]
+                  }
+                  that.buildForm.emit('submitDone', submission)
+                })
+                .catch(function (error) {
+                  that.buildForm.emit('submitError', error)
+                  console.log(error)
+                })
+            }
             document
               .querySelectorAll('.fa-refresh.fa-spin')
               .forEach((el) => el.remove())
@@ -185,6 +221,10 @@ export default {
         if (!resp.i18nJson) {
           resp.i18nJson = null
         }
+        if (resp?.datasources) {
+          window.ds = resp.datasources
+        }
+
         window.Formio.createForm(
           document.getElementById(that.divIdentifier),
           resp.schema, JSON.parse(resp.i18nJson)
@@ -206,10 +246,10 @@ export default {
             updateData(
               that.formcode,
               that.dataoid,
-              that.cleanSubmmision(submission, that)
+              submission
             )
               .then(function () {
-                that.buildForm.emit('submitDone', that.cleanSubmmision(submission, that))
+                that.buildForm.emit('submitDone', submission)
               })
               .catch(function (error) {
                 console.log(error)
@@ -256,7 +296,6 @@ export default {
     unmounted: function () {
     },
     mounted: function () {
-      console.log('mounted show')
       this.waitForFormio()
     },
     beforeMount: function () {
@@ -264,16 +303,20 @@ export default {
   }
 }
 </script>
-<style lang="scss" >
+<style lang="scss">
+
 #builder {
-  padding: 20px !important;
+  padding: 24px !important;
 }
 
-.formio-component-datagrid .datagrid-table,
-.formio-component-datagrid .datagrid-table td,
-.formio-component-datagrid .datagrid-table th {
+.formio-component-datagrid .datagrid-table, .formio-component-datagrid .datagrid-table th {
   border: 0px solid #ddd !important;
   padding: 10px;
+}
+
+::v-deep .formio-form {
+  max-width: 100%;
+  width: 100%;
 }
 
 a {
