@@ -41,7 +41,11 @@ const getters = {
   },
   getAllowedComponents (state) {
     const currentApp = state.currentApplication
-    return (state.configuration).filter(app => app.realmId === currentApp).map(item => item.navigationAllowed)[0] || []
+    return (state.configuration).filter(app => app.realmId === currentApp).map(item => item.components)[0] || {}
+  },
+  getHiddenDatasources (state) {
+    const currentApp = state.currentApplication
+    return (state.configuration).filter(app => app.realmId === currentApp).map(item => item.hiddenDatasources)[0] || []
   },
   getCurrentFilters (state) {
     const currentApp = state.currentApplication

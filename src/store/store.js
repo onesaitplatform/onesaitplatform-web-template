@@ -4,6 +4,7 @@ import createPersistedState from 'vuex-persistedstate'
 import login from './modules/login'
 import configuration from './modules/configuration'
 import filters from './modules/filters'
+// import dashboards from './modules/dashboards'
 import moment from 'moment'
 
 Vue.use(Vuex)
@@ -12,7 +13,8 @@ export default new Vuex.Store({
   state: {
     busy: false,
     mqPhone: window.matchMedia('(max-width: 767px)'),
-    currentDate: moment().format('LL')
+    currentDate: moment().format('LL'),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
   },
   getters: {
     isBusy: state => state.busy,
@@ -27,6 +29,7 @@ export default new Vuex.Store({
     login,
     configuration,
     filters
+    // dashboards
   },
   plugins: [createPersistedState()]
 })

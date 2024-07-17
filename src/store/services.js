@@ -1,4 +1,5 @@
 import axios from 'axios'
+import axiosRetry from 'axios-retry'
 import { merge } from 'lodash'
 import { OdsNotification as Notify } from '@ods/ods'
 
@@ -13,7 +14,7 @@ class Services {
    * @param {object} configuration    - Custom axios and notifications configuration that will be merged with the default configuration
    */
   constructor (baseURL, config) {
-    if (!this.URL_REGEX.test(baseURL)) throw new Error(`Invalid URL: ${baseURL}`)
+    // if (!this.URL_REGEX.test(baseURL)) throw new Error(`Invalid URL: ${baseURL}`)
     const configuration = merge(this._defaultConfiguration, config)
     this._services = new Set()
     this._configuration = {
@@ -202,7 +203,7 @@ class Services {
    * @param {object} [configuration]          - The custom axios configuration for this specific endpoint
    * @param {string} [configuration.endpoint] - The partial url for this specific endpoint (will be concat with the Services instance baseURL)
    */
-  add (name, { endpoint, ...config } = {}) {
+  add (name, retry, { endpoint, ...config } = {}) {
     const baseURL = `${config.baseURL || this._configuration.axios.baseURL}${
       endpoint || `/${name}`
     }`
@@ -210,6 +211,11 @@ class Services {
       ...merge(config, this._configuration.axios),
       baseURL
     })
+    // if retry enabled, retry conf added.
+    if (retry) {
+      axiosRetry(service, { retries: 2 }) // 3 retry: first + 2 more.
+    }
+
     service.interceptors.response.use(this._successHandler, this._errorHandler)
     this._services.add(name)
     this[name] = service

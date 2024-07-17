@@ -9,5 +9,6 @@ export const api = new Api(baseURL, {
   unauthorizedNotification: 'Unauthorized Action.',
   setClean: true
 })
-
-api.add('platform', { endpoint: '/controlpanel/api' })
+// New Axios Service Add: @name, @retry, @options
+api.add('platform', false, { endpoint: '/controlpanel/api' }) // platform API Services
+api.add('userDefined', true, { endpoint: '/api-manager/server/api' }) // User defined API Services

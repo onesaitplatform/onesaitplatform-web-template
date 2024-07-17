@@ -1,4 +1,5 @@
 <template>
+  <!-- VIEW FOR DASHBOARD MANAGEMENT COMPONENT -->
   <div class="admin">
     <Dashboard-Admin :options="options"></Dashboard-Admin>
   </div>
@@ -9,7 +10,7 @@ import { mapGetters } from 'vuex'
 import DashboardAdmin from '@/components/admin/DashboardAdmin.vue'
 
 export default {
-  name: 'Admin',
+  name: 'AdminDashboards',
   components: {
     DashboardAdmin
   },
@@ -20,10 +21,12 @@ export default {
   },
   methods: {
     getComponentOptions () {
-      const componentId = 'Admin'
+      const componentId = 'AdminDashboards' // AdminDashboards now , previous versiones Admin
       const role = this.getUser?.role
-      const allowedComponents = this.getAllowedComponents ? this.getAllowedComponents : []
-      const options = allowedComponents.filter(x => x.role === role).map(y => y.components)[0]?.filter(z => z.id === componentId)[0]?.options
+      const COMPONENTS = this.getAllowedComponents ? this.getAllowedComponents : {}
+      const defaultOptions = COMPONENTS.definition.filter(x => x.id === componentId).map(y => y.defaultOptions)[0] || {}
+      const roleOptions = COMPONENTS.navigation.filter(x => x.role === role).map(y => y.allowed)[0].filter(z => z.id === componentId)[0]?.roleOptions || {}
+      const options = { ...defaultOptions, ...roleOptions }
       this.componentOptions = options
     }
   },

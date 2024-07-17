@@ -1,7 +1,7 @@
 <template>
   <div class="containerD">
     <!-- TOOLBAR COMPONENT -->
-    <tool-bar-filter v-if="showToolBar" :dynFilters="globalFilters.filter(x => x.destination === 'topBarFilter')" :dashboardId="currentDashboardId" :editmode="handleEditMode" :showFilters="showFilters" :location="'topBarFilter'"/>
+    <tool-bar-filter v-if="showToolBar" :dynFilters="globalFilters.filter(x => x.destination === 'topBarFilter')" :dashboardId="currentDashboardId" :editmode="handleEditMode" :showFilters="showFilters" :location="'topBarFilter'" :options="options" @show:datasources="showDatasources" />
     <div class="containerD__layout ods-flex ods-flex-wrap">
       <!--- SIDERBAR COMPONENT -> FILTERS, GADGETS -> TREE -->
       <side-bar-filter v-if="showSideBar"
@@ -12,6 +12,8 @@
        :editmode="handleEditMode"
        :location="'sideBarFilter'"
        :datasources="datasources"
+       :options="options"
+       :close="closeSideBar"
        @add:datasource="updateGadgetDatasource"
        @drag:gadget="(g, e) => addGadget(g, e)"
        @open:add-fav-modal="(identification) => openAddFavModal(identification)"
@@ -24,6 +26,10 @@
       </div>
       <!-- GADGET DRAWER -->
       <gadget-drawer v-model="drawer.visible" :gadget="gadget" :datasources="datasources" @update:name="updateGadgetName" @update:header="updateGadgetHeader" @update:datasource="updateGadgetDatasource" @update:settings="updateGadgetSettings" @close-end="closeDrawer"></gadget-drawer>
+
+      <!-- DATASOURCES -->
+      <datasource-drawer v-model="datasourceDrawer.visible" :gadget="gadget" :datasources="datasources" :init="datasourceDrawer.init" :counter="datasourceDrawer.counter" :ontologies="ontologies" :dashboard="dashboard" :options="options" :direction="'btt'" :width="'60%'" @close-end="closeDrawer" @reload:datasources="reloadDatasources" ></datasource-drawer>
+
       <!-- MODALS -->
       <add-fav-gadget-modal v-model="addFavModal.visible" @add:fav-gadget="(identification) => addFavGadget({ ...addFavModal.gadget, identification })"></add-fav-gadget-modal>
       <remove-fav-gadget-modal v-model="removeFavModal.visible" @remove:fav-gadget="removeFavGadget(removeFavModal.gadget)"></remove-fav-gadget-modal>
@@ -41,10 +47,12 @@ import {
 } from '@/services/gadgets/gadgets'
 import { getDashboard } from '@/services/dashboards/dashboards'
 import { getDatasources } from '@/services/datasources/datasources'
+import { getOntologies } from '@/services/ontologies/ontologies'
 import dashboardWrapper from '../components/dashboard/VueWrapperComponent'
 import ToolBarFilter from '../components/dashboard/filter/ToolBarFilter'
 import SideBarFilter from '../components/dashboard/filter/SideBarFilter'
 import GadgetDrawer from '@/components/gadgets/drawer/GadgetDrawer'
+import DatasourceDrawer from '@/components/datasources/DatasourceDrawer'
 import AddFavGadgetModal from '@/components/gadgets/modals/AddFavGadgetModal'
 import RemoveFavGadgetModal from '@/components/gadgets/modals/RemoveFavGadgetModal'
 import DeleteGadgetModal from '@/components/gadgets/modals/DeleteGadgetModal'
@@ -57,6 +65,7 @@ export default {
     ToolBarFilter,
     SideBarFilter,
     GadgetDrawer,
+    DatasourceDrawer,
     AddFavGadgetModal,
     RemoveFavGadgetModal,
     DeleteGadgetModal
@@ -81,6 +90,8 @@ export default {
       dashboardStarted: false,
       initialDatalink: {}, // { 'external-entity': [{ field: 'codent', value: "'0062'", op: '=' }], 'external-segment': [{ field: 'segment', value: "('MEX_62_1')", op: 'IN' }] },      // Global Filters Info.
       errorCounter: 0,
+      componentOptions: {},
+      ontologies: [],
       // GADGET CREATION COMPONENTS
       gadget: {
         datasource: {}
@@ -105,7 +116,14 @@ export default {
         callback: null
       },
       dashboardKey: 0,
-      editModeFromManagement: null
+      editModeFromManagement: null,
+      // DATASOURCES
+      datasourceDrawer: {
+        visible: false,
+        init: true,
+        counter: 1
+      },
+      closeSideBar: false
     }
   },
   watch: {
@@ -116,7 +134,6 @@ export default {
         // get internal id of dashboard
         if (!params.dashboardId) return false
         var vapp = this
-        console.log(params)
         var routeParams = params
         if (routeParams.edit != null || routeParams.edit !== 'undefined') { this.editModeFromManagement = routeParams.edit }
         const internalIdEndPoint = '/controlpanel/api/dashboards/dashboard/' + routeParams.dashboardId
@@ -155,6 +172,17 @@ export default {
       'checkInitialFilters',
       'filterDataFilter'
     ]),
+    // RETRIVE DASHBOARD COMPONENT OPTIONS
+    getComponentOptions () {
+      const componentId = 'AdminDashboards'
+      const role = this.getUser?.role
+      const COMPONENTS = this.getAllowedComponents ? this.getAllowedComponents : {}
+      const defaultOptions = COMPONENTS.definition.filter(x => x.id === componentId).map(y => y.defaultOptions)[0] || {}
+      const roleOptions = COMPONENTS.navigation.filter(x => x.role === role).map(y => y.allowed)[0].filter(z => z.id === componentId)[0]?.roleOptions || {}
+      const options = { ...defaultOptions, ...roleOptions }
+      this.componentOptions = options
+    },
+
     // LOAD DASHBOARD INTO VUEWRAPPER
     swapBoard (dashboardId) {
       this.dashboard = dashboardId
@@ -324,7 +352,6 @@ export default {
     },
     // GADGET MANAGEMENT METHODS ---
     gadgetLoaded (event) {
-      console.log('GADGETLOADED....')
       if (!this.dashboardStarted) { this.dashboardStarted = true }
       this.api = window.DSApi.inst1.api
       this.api.enableEventEdit()
@@ -437,7 +464,7 @@ export default {
         this.drawer.visible = false
       }
     },
-
+    // gadget drawer
     async openDrawer (gadget) {
       this.gadget = {}
       this.drawer.visible = false
@@ -454,7 +481,6 @@ export default {
       const selected = this.$el.querySelector(
         `#${this.gadget.id} gridster-item`
       )
-      console.log('selected gadget: ', `#${this.gadget.id} gridster-item`)
       if (selected) {
         selected.classList.add('gridster-item--selected')
         selected.classList.remove('gridster-item--no-selected')
@@ -462,16 +488,25 @@ export default {
       window.DSApi.inst1.api.forceRender()
     },
 
-    closeDrawer () {
-      const elements = this.$el.querySelectorAll('gridster-item')
-      elements.forEach((el) =>
-        el.classList.remove(
-          'gridster-item--no-selected',
-          'gridster-item--selected'
+    closeDrawer (type) {
+      console.log('AFTER CLOSE DRAWER ON PARENT, ', type)
+      if (type === 'datasource') {
+        // datasource
+        this.datasourceDrawer.init = true
+        this.gadget = {}
+        this.sidebar.visible = true
+      } else {
+        // gadget
+        const elements = this.$el.querySelectorAll('gridster-item')
+        elements.forEach((el) =>
+          el.classList.remove(
+            'gridster-item--no-selected',
+            'gridster-item--selected'
+          )
         )
-      )
-      this.gadget = {}
-      this.sidebar.visible = true
+        this.gadget = {}
+        this.sidebar.visible = true
+      }
     },
 
     updateGadgetName (name) {
@@ -484,7 +519,18 @@ export default {
       window.DSApi.inst1.api.forceRender()
     },
 
+    // update datasource or open drawer for datasources if #NEW or #EDIT-datasourceId
     updateGadgetDatasource (datasource) {
+      console.log('DASHBOARD: ', datasource)
+      if (datasource.name === '#NEW') {
+        this.drawer.visible = false
+        this.sidebar.visible = false
+        this.closeSideBar = true
+        this.showDatasources()
+        return false
+      }
+      // update gadget datasource when is not a new one
+      this.closeSideBar = false
       this.gadget.datasource = JSON.parse(JSON.stringify(datasource))
       window.DSApi.inst1.api.forceRender()
     },
@@ -513,12 +559,60 @@ export default {
       this.gadget.datasource = JSON.parse(JSON.stringify(this.gadget.datasource))
       window.DSApi.inst1.api.forceRender()
     },
-
+    // datasources
     async getDatasources () {
+      var config = {}
       this.datasources = []
-      const datasources = await getDatasources()
+      // tag system
+      var tag = ''
+      if (this.options) {
+        tag = this.options.tag ?? ''
+        if (tag) config.tag = tag
+      }
+      const datasources = await getDatasources(config)
+      var datasourcesToHide = this.getHiddenDatasources || []
       // apply unique (api duplicate owner datasources with proyect datasources)
       this.datasources = datasources.filter((v, i, a) => a.findIndex(v2 => (v2.identification === v.identification)) === i)
+      if (datasourcesToHide.length > 0) {
+        console.log('ds: ', this.datasources, ' hide: ', datasourcesToHide)
+        this.datasources = this.datasources.filter(x => !datasourcesToHide.includes(x.identification))
+      }
+    },
+    reloadDatasources (counter) {
+      console.log('Reloading Datasources after creation of new one in datasources management')
+      this.datasourceDrawer.counter = counter + 1
+      this.getDatasources()
+    },
+    showDatasources () {
+      console.log('toggle datasources component')
+      this.datasourceDrawer.visible = !this.datasourceDrawer.visible
+    },
+    hideDatasources () {
+      console.log('hide datasources component')
+      this.datasourceDrawer.visible = false
+    },
+    async loadOntologies () {
+      var config = {}
+      this.ontologies = []
+      // project and role filter if tag system is enabled
+      const project = process.env.VUE_APP_PROJECT
+      const role = this.getUser?.role
+      config.project = project
+      config.role = role
+      // tag system
+      var tag = ''
+      if (this.options) {
+        tag = this.options.tag ?? ''
+        if (tag) config.tag = tag
+      }
+      try {
+        this.ontologies = await getOntologies(config)
+      } catch (error) {
+        console.log('Error Query Ontologies ', error)
+        this.ontologies = []
+      } finally {
+        console.log('loadOntologies finished')
+      }
     }
   },
   computed: {
@@ -532,9 +626,13 @@ export default {
       getUser: 'getUser',
       getGlobalIsLoaded: 'getGlobalIsLoaded',
       getInitialDataLink: 'getInitialDataLink',
-      getCustomization: 'getCurrentCustomization'
+      getCustomization: 'getCurrentCustomization',
+      getHiddenDatasources: 'getHiddenDatasources',
+      getAllowedComponents: 'getAllowedComponents'
     }),
-
+    options () {
+      return this.componentOptions
+    },
     // SHOW OR HIDE TOOLBAR SECTIONS IF NO FILTERS AND VISUALIZATION MODE IS NOT EDIT.
     showToolBar () {
       var dashboardActive = this.$route.params.dashboardId || null
@@ -553,7 +651,6 @@ export default {
       editMode = this.currentDashboard === favoriteDashboard
       // edit from dashboard management
       if (this.editModeFromManagement != null) { editMode = this.editModeFromManagement }
-      console.log('EDIT MODE: ', editMode)
       return editMode
     },
     showFavorites () {
@@ -574,6 +671,10 @@ export default {
       return showFilters
     },
 
+    datasourcesShow () {
+      return this.datasourceDrawer.visible
+    },
+
     redirectDashboard () {
       if (sessionStorage.getItem('redirect') !== null || sessionStorage.getItem('redirect') !== undefined) {
         var redirectRoute = JSON.parse(sessionStorage.getItem('redirect'))
@@ -585,11 +686,17 @@ export default {
   },
 
   created () {
+    // DASHBOARDS COMPONENT OPTIONS (tags system)
+    this.getComponentOptions()
+
     // LOAD DYN FILTERS IF NOT LOADED
     if (!this.getGlobalIsLoaded) { this.initGlobalFilters() }
 
     // LOAD DATASOURCES
     this.getDatasources()
+
+    // LOAD ONTOLOGIES for datasources
+    this.loadOntologies()
 
     // DASHBOARD KEY
     this.dashboardKey++

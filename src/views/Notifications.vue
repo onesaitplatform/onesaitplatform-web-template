@@ -1,17 +1,17 @@
 <template>
-  <div class="user">
-    <Account :options="options"></Account>
+  <div class="notifications">
+    <Notifications-Admin :options="options"></Notifications-Admin>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import Account from '@/components/user/Account.vue'
+import NotificationsAdmin from '@/components/notifications/NotificationsAdmin.vue'
 
 export default {
-  name: 'User',
+  name: 'Admin',
   components: {
-    Account
+    NotificationsAdmin
   },
   data () {
     return {
@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     getComponentOptions () {
-      const componentId = 'userAccount'
+      const componentId = 'Notifications' // SAME ID DEFINED ON CC. (CENTRALIZED CONFIGURATION)
       const role = this.getUser?.role
       const COMPONENTS = this.getAllowedComponents ? this.getAllowedComponents : {}
       const defaultOptions = COMPONENTS.definition.filter(x => x.id === componentId).map(y => y.defaultOptions)[0] || {}
@@ -42,12 +42,12 @@ export default {
     this.getComponentOptions()
   },
   mounted () {
-    console.log('Components: ', this.getAllowedComponents, 'User: ', this.getUser, 'Options: ', this.options)
+
   }
 }
 </script>
 <style lang="scss" scoped>
-.user {
-  margin: rem(24);
+.notifications {
+  margin: 0;
 }
 </style>

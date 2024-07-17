@@ -53,8 +53,43 @@ export default {
       getCustomization: 'getCurrentCustomization'
     })
   },
+  beforeMount () {
+    // add Specific form CSS files to component
+    var platformUrl = process.env.VUE_APP_PLATFORM
+    var link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `${platformUrl}/controlpanel/static/formsio/boostrap.css`
+    //  'http://localhost:18000/controlpanel/static/formsio/boostrap.css';
+    link.id = 'bootstrap-style'
+    document.head.appendChild(link)
 
-  created () {
+    link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `${platformUrl}/controlpanel/static/formsio/formiojs/dist/formio.full.css`
+    // 'http://localhost:18000/controlpanel/static/formsio/formiojs/dist/formio.full.css';
+    link.id = 'formio-full'
+    document.head.appendChild(link)
+
+    link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `${platformUrl}/controlpanel/static/formsio/assets/styles.css`
+    // 'http://localhost:18000/controlpanel/static/formsio/assets/styles.css';
+    link.id = 'styles-css'
+    document.head.appendChild(link)
+
+    link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `${platformUrl}/controlpanel/static/formsio/assets/boostrap-form.css`
+    //  'http://localhost:18000/controlpanel/static/formsio/assets/boostrap-form.css';
+    link.id = 'boostrap-form'
+    document.head.appendChild(link)
+
+    link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `${platformUrl}/controlpanel/static/formsio/assets/form-editor.css`
+    //  'http://localhost:18000/controlpanel/static/formsio/assets/form-editor.css';
+    link.id = 'form-editor'
+    document.head.appendChild(link)
   },
   mounted () {
     // formio vars libs initialization
@@ -72,8 +107,28 @@ export default {
     // store host for app base
     window.formsBaseURLCreate = platformUrl + '/controlpanel/api/forms'
   },
-
-  beforeDestroy () {
+  onBeforeUnmount () {
+    // remove form specific CSS files
+    var link = document.getElementById('bootstrap-style')
+    if (link) {
+      link.remove()
+    }
+    link = document.getElementById('formio-full')
+    if (link) {
+      link.remove()
+    }
+    link = document.getElementById('styles-css')
+    if (link) {
+      link.remove()
+    }
+    link = document.getElementById('boostrap-form')
+    if (link) {
+      link.remove()
+    }
+    link = document.getElementById('form-editor')
+    if (link) {
+      link.remove()
+    }
   },
 
   // add breadcrum info of dashboard

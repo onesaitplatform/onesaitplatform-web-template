@@ -83,9 +83,6 @@ export default {
       }
       return style
     }
-  },
-  mounted () {
-    console.log('app login...')
   }
 }
 

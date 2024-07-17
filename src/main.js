@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
+import i18n from './lang/i18n.js' // eslint-disable-line
 import router from './router'
 import Keycloak from 'keycloak-js'
 import AsyncComputed from 'vue-async-computed'
 import ODS from '@ods/ods' // eslint-disable-line
-import i18n from './lang/i18n.js' // eslint-disable-line
 import { closest } from './utils/ie' // eslint-disable-line
 import { truncate, formatDate } from './utils/filters' // eslint-disable-line
 import Meta from 'vue-meta'
@@ -16,6 +16,7 @@ closest()
 Vue.use(AsyncComputed) // async computed properties added
 Vue.use(require('vue-moment')) // momentjs for date treatment
 Vue.$router = router
+
 // vue-meta
 const metaOptions = { tagIDKeyName: 'id', refreshOnceOnNavigation: true }
 Vue.use(Meta, metaOptions) // load css and script on demand on components
@@ -46,8 +47,8 @@ if (process.env.VUE_APP_AUTH_TYPE === 'KEYCLOAK') {
     // APP VUE WITH KEYCLOAK
     var osvm = new Vue({
       i18n,
-      router,
       store,
+      router,
       render: h => h(App)
     }).$mount('#app')
     // define App to operate externally

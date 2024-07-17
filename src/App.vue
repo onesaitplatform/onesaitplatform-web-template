@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <template v-if="!this.$route.path.includes('login') && this.getLoad">
-        <header-content @hasTopBar="handleHeigth"></header-content>
+    <template v-if="!this.$route.path.includes('login')">
+        <header-content  @hasTopBar="handleHeigth" :notifications="getOptions" v-if="showHeader"></header-content>
         <div class="ods-flex" :style="customCSSVars">
           <nav-content></nav-content>
           <transition name="fade" mode="out-in">
@@ -14,7 +14,7 @@
           </transition>
         </div>
     </template>
-    <template  v-else>
+    <template v-else>
       <router-view></router-view>
     </template>
   </div>
@@ -36,24 +36,36 @@ export default {
     return {
       wrapClass: '',
       orderState: {},
-      DashboardAppLoaded: false
+      DashboardAppLoaded: false,
+      showHeader: false,
+      isReloaded: 0
     }
   },
   computed: {
     ...mapGetters({
       getEmbededApp: 'getEmbededApp',
       getCurrentCustomization: 'getCurrentCustomization',
-      getLoad: 'getLoad'
+      getAllowedComponents: 'getAllowedComponents'
     }),
+    // component Notifications options (optional).
+    getOptions () {
+      const componentId = 'Notifications'
+      const role = sessionStorage.getItem('role')
+      const COMPONENTS = this.getAllowedComponents ? this.getAllowedComponents : {}
+      const defaultOptions = COMPONENTS.definition.filter(x => x.id === componentId).map(y => y.defaultOptions)[0] || {}
+      const roleOptions = COMPONENTS.navigation.filter(x => x.role === role).map(y => y.allowed)[0].filter(z => z.id === componentId)[0]?.roleOptions || {}
+      const options = { ...defaultOptions, ...roleOptions }
+      return options
+    },
     // if app has custom root classes for customization then load in main.
     customCSSVars () {
-      var customizationVars = this.getCurrentCustomization
+      var customizationVars = this.getCurrentCustomization || null
       var cssCustom = {}
-      if (!customizationVars || !customizationVars.styles) { return false }
-      if (Object.keys(customizationVars.styles).length === 0) {
+      if (!customizationVars || Object.keys(customizationVars).length === 0) { return false }
+      if (Object.keys(customizationVars?.styles).length === 0) {
         return {}
       } else {
-        Object.keys(customizationVars.styles).forEach(key => {
+        Object.keys(customizationVars?.styles).forEach(key => {
           cssCustom[key] = customizationVars.styles[key]
         })
       }
@@ -67,6 +79,10 @@ export default {
         : 'ods-scrollbar--main-content'
     }
   },
+  mounted () {
+    // Litle delay due to possible F5 refresh and i18n tags on breadCrumbs.
+    setTimeout(() => { this.showHeader = true }, 1000)
+  },
   metaInfo () {
     var app = this
     // if (this.DashboardAppLoaded) { return {} }
@@ -78,31 +94,31 @@ export default {
         name: 'Phase 1 Scripts',
         scripts: [
           '/controlpanel/static/vendor/onesait-ds/lib/vue.min.js',
-          '/controlpanel/static/vendor/element-ui/index.js',
           '/controlpanel/static/vendor/echarts-542/echarts.min.js'
         ]
       },
       {
         name: 'Phase 2 Scripts',
         scripts: [
-          '/controlpanel/static/dashboards/gridster.js',
+          '/controlpanel/static/vendor/element-ui/index.js',
           '/controlpanel/static/vendor/onesait-ds/lib/index.js',
           '/web/' + appFolder + '/libs/vue-carousel.min.js',
           '/web/' + appFolder + '/libs/vue-i18n.js',
           '/web/' + appFolder + '/libs/xlsx.full.min.js',
           '/web/' + appFolder + '/libs/ol.js',
           '/controlpanel/static/vendor/vue-echarts-660/vue-echarts.min.js',
-          '/controlpanel/static/vendor/element-ui/locale/es.min.js',
-          '/controlpanel/static/vendor/element-ui/locale/en.min.js',
           '/controlpanel/static/js/pages/dashboardMessageHandler.js',
           '/controlpanel/static/vendor/jsoneditor/jsoneditor.js',
           '/controlpanel/static/formsio/formiojs/dist/formio.full.js',
-          '/controlpanel/static/js/pages/forms.js'
+          '/controlpanel/static/js/pages/forms.js',
+          '/controlpanel/static/formsio/libs/ace/1.4.12/ace.js'
         ]
       },
       {
         name: 'Phase 3 Scripts',
         scripts: [
+          '/controlpanel/static/vendor/element-ui/locale/es.min.js',
+          '/controlpanel/static/vendor/element-ui/locale/en.min.js',
           '/controlpanel/static/dashboards/scripts/app.js'
         ],
         callback: function () {
@@ -118,31 +134,7 @@ export default {
       link: [
         {
           rel: 'stylesheet',
-          href: '/controlpanel/static/formsio/boostrap.css'
-        },
-        {
-          rel: 'stylesheet',
           href: '/web/' + appFolder + '/libs/materialIcons.css'
-        },
-        /* {
-          rel: 'stylesheet',
-          href: '/web/web-resources/fonts/fonts.css'
-        }, */
-        {
-          rel: 'stylesheet',
-          href: '/controlpanel/static/formsio/formiojs/dist/formio.full.css'
-        },
-        {
-          rel: 'stylesheet',
-          href: '/controlpanel/static/formsio/assets/styles.css'
-        },
-        {
-          rel: 'stylesheet',
-          href: '/controlpanel/static/formsio/assets/boostrap-form.css'
-        },
-        {
-          rel: 'stylesheet',
-          href: '/controlpanel/static/formsio/assets/form-editor.css'
         },
         {
           rel: 'stylesheet',
@@ -156,6 +148,14 @@ export default {
         {
           rel: 'stylesheet',
           href: '/controlpanel/static/vendor/element-ui/theme-chalk/index.css'
+        },
+        {
+          rel: 'stylesheet',
+          href: '/web/web-resources/libs/css/dashboard.css'
+        },
+        {
+          rel: 'stylesheet',
+          href: '/web/web-resources/fonts/fonts.css'
         },
         {
           rel: 'stylesheet',
@@ -225,6 +225,13 @@ body {
 // Your global styles goes from here ↓↓↓↓
 .ods-dataviz {
   height: 100%;
+}
+
+.formio-form {
+    position: relative;
+    min-height: 80px;
+    max-width: 100%!important;
+    margin: auto;
 }
 
 .ng-scope {
@@ -334,5 +341,9 @@ td.table-options > a{
   }
 .containerD__layout{
   height: calc(100vh - 56px);
+}
+dl, ol, ul {
+    margin-top: 0;
+    margin-bottom: 0rem!important;
 }
 </style>

@@ -14,8 +14,7 @@ const state = {
   i18nId: process.env.VUE_APP_PLATFORM_I18n || '',
   user: {},
   token: '',
-  keyCloakToken: '',
-  load: false
+  keyCloakToken: ''
 }
 
 // login type [ default, realm ]
@@ -58,7 +57,6 @@ const getters = {
     return loginEndpoints.availableUserApps
   },
   getNavigation (state) {
-    console.log('****state get navigation', state.navigation)
     return state.navigation
   },
   getI18n (state) {
@@ -195,18 +193,20 @@ const actions = {
     commit('SET_USER', user)
     return user
   },
+
   // GET I18N LANGUAGES FROM PLATFORM
   async getI18nData ({ commit, getters, rootGetters }, app) {
     var that = app
     try {
-      const i18nId = rootGetters.getAppI18nId || ''
+      const i18nId = rootGetters.getAppI18nId || rootGetters.getI18n || ''
       var messages = {}
       var languages = []
       if (i18nId) {
         const i18nApiEndPoint = '/controlpanel/api/internationalizations/' + i18nId + '/'
         const i18nData = await HTTP_PLATFORM.get(i18nApiEndPoint, { headers: { 'Content-Type': 'application/json', Accept: 'application/json' } })
-        if (i18nData.data.jsoni18n && i18nData.data.jsoni18n.languages && Object.keys(i18nData.data.jsoni18n.languages).length > 0) {
-          var i18nFiles = i18nData.data.jsoni18n.languages
+        // eslint-disable-next-line no-prototype-builtins
+        const i18nFiles = i18nData.data.hasOwnProperty('jsoni18n') ? i18nData.data.jsoni18n.languages : i18nData.data.languages
+        if (i18nFiles && Object.keys(i18nFiles).length > 0) {
           var i18Label = ''
           // iterate and mount messages object (es,en,...)
           Object.keys(i18nFiles).forEach(key => {
@@ -246,15 +246,16 @@ const actions = {
     try {
       console.log('|--> loading environment for App:')
       // console.log('|--> ', JSON.stringify(app))
-      // dashboards
-      // eslint-disable-next-line no-unused-vars
-      const dashboards = await dispatch('getDashboards', app)
-      console.log('  |--> Loadind Available Dashboards.')
 
       // session App User info
       // eslint-disable-next-line no-unused-vars
       const sessionInfo = await dispatch('getAppUserUserInfo', app)
       console.log('  |--> Loading User Session Info.')
+
+      // dashboards
+      // eslint-disable-next-line no-unused-vars
+      const dashboards = await dispatch('getDashboards', app)
+      console.log('  |--> Loadind Available Dashboards.')
 
       // navigation
       // eslint-disable-next-line no-unused-vars
@@ -321,7 +322,6 @@ const mutations = {
     state.keyCloakToken = token
   },
   'SET_NAVIGATION' (state, payload) {
-    console.log('****state SET_NAVIGATION', payload)
     state.navigation = payload
   },
   'SET_LANGUAGES' (state, payload) {
@@ -338,13 +338,13 @@ const mutations = {
   'RESET_APPLICATIONS' (state) {
     state.applications = []
   },
-  'SET_LOAD' (state, payload) {
-    state.load = payload
-  },
   'SET_TOKEN_SERVICE' (state, { token }) {
     api.setToken(token)
     state.token = token
     sessionStorage.setItem('keycloakToken', token)
+  },
+  'SET_LOAD' (state, payload) {
+    state.load = payload
   }
 }
 
