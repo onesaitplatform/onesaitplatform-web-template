@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import messages from './lang'
 import { notifierFactory } from '@/utils/notifier'
+import { getResourcesByTag, addResourcesByTag } from '@/services/tags/tags'
 
 Vue.use(VueI18n)
 const i18n = new VueI18n(messages)
@@ -26,13 +27,22 @@ const notifier = notifierFactory(i18n)
  * @param {RequestConfiguration}  - Custom axios configuration that is used to control the behaviour of the request
  * @return {GetDatatasourcesResponse} - An object containing the list of Datasources
  */
-export const getDatasources = async (params, config = {}) => {
+export const getDatasources = async (config = {}) => {
   const notify = notifier('getDatasources', ['error'])
   const { data: datasources } = await api.platform.get('/gadgetdatasources/', {
     ...config,
     notify
   })
-  return datasources
+  // generic filters using tags
+  // if options contains filter key , then apply, if not just only identification.
+  if (config.tag !== '') {
+    const resources = await getResourcesByTag(config.tag, 'GadgetDatasource')
+    const resourcesList = resources.length > 0 ? resources.map(x => x.name) : []
+    return resourcesList.length > 0 ? datasources.filter((d) => (resourcesList.includes(d.identification))) : []
+  } else {
+    // no filter using tags
+    return datasources
+  }
 }
 
 /**
@@ -51,7 +61,47 @@ export const getDatasourceFields = async (id, config = {}) => {
   return fields
 }
 
+/**
+ * Controller for the POST datasource service. This method performs the request regarding the configuration and
+ * parameters passed as arguments and returns an object containing the new Datasource that has been created
+ * @param {form} body             - The Datasource data which will be sent within the request
+ * @param {RequestConfiguration}  - Custom axios configuration that is used to control the behaviour of the request
+ * @return {PostDatasourceResponse}  - An object containing the new Datasource
+ */
+export const createDatasource = async (body, config) => {
+  const notify = notifier('createDatasource', ['error', 'success'])
+  const { data: datasource } = await api.platform.post('/gadgetdatasources', body, {
+    ...config,
+    notify
+  })
+  // id tag system enable, after return datasource, add it to the tag system
+  if (config?.tag) {
+    const body = [{ name: config.tag, resourceId: datasource.id }]
+    const resources = await addResourcesByTag(body)
+    console.log('createDatasource, add datasource to tag system: ', config.tag, 'resource: ', resources)
+  }
+  return datasource
+}
+
+/**
+ * Controller for the POST datasource service. This method performs the request regarding the configuration and
+ * parameters passed as arguments and returns an object containing the edited Datasource that has been edited
+ * @param {form} body             - The Datasource data which will be sent within the request
+ * @param {RequestConfiguration}  - Custom axios configuration that is used to control the behaviour of the request
+ * @return {PostDatasourceResponse}  - An object containing the edited Datasource
+ */
+export const editDatasource = async (body, config) => {
+  const notify = notifier('editDatasource', ['error', 'success'])
+  const { data: datasource } = await api.platform.put('/gadgetdatasources', body, {
+    ...config,
+    notify
+  })
+  return datasource
+}
+
 export default {
   getDatasources,
-  getDatasourceFields
+  getDatasourceFields,
+  createDatasource,
+  editDatasource
 }

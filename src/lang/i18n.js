@@ -29,8 +29,8 @@ export async function loadMessages (i18nId) {
     if (i18nId) {
       const i18nApiEndPoint = '/controlpanel/api/internationalizations/' + i18nId + '/'
       const i18nData = await HTTP_PLATFORM.get(i18nApiEndPoint, { headers: { 'Content-Type': 'application/json', Accept: 'application/json' } })
-      if (i18nData.data.jsoni18n && i18nData.data.jsoni18n.languages && Object.keys(i18nData.data.jsoni18n.languages).length > 0) {
-        var i18nFiles = i18nData.data.jsoni18n.languages
+      if (i18nData.data.languages && Object.keys(i18nData.data.languages).length > 0) {
+        var i18nFiles = i18nData.data.languages
         var i18Label = ''
         localeDefault = (i18nData.data.default).toLowerCase()
         // iterate and mount messages object (es,en,...)

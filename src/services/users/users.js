@@ -28,7 +28,14 @@ export const getUsers = async (params, config = {}) => {
     ...config,
     notify
   })
-  return users
+  // check for extrafields info and add to data.
+  const extraUsers = users.map(user => ({
+    ...user,
+    extra: user.extraFields ? JSON.parse(user.extraFields) : null
+  }))
+
+  console.log('RETRY USERs: ', extraUsers)
+  return extraUsers
 }
 
 /**

@@ -1,42 +1,38 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/views/Home.vue'
-import Login from '@/views/login/Login'
-import User from '@/views/User.vue'
-import Dashboard from '@/views/Dashboard.vue'
-import Admin from '@/views/Admin.vue'
-import Test from '@/views/Test.vue'
-import Users from '@/views/Users.vue'
-import LoginForm from '@/components/login/LoginForm'
-import Form from '@/views/Forms.vue'
-import LoginPasswordForm from '@/components/login/LoginPasswordForm'
 import { publicPath } from '../../vue.config'
 import store from '../store/store'
+import Login from '@/views/login/Login'
 
 Vue.use(Router)
 
 /* function to add breadcrumbs to a view */
 const setBreadcrumbParams = to => {
+  // eslint-disable-next-line no-unused-vars
   const breadcrumbParams = {
-    userInfo: sessionStorage.getItem('userInfo'),
-    randomStr: sessionStorage.getItem('randomStr'),
-    dashboardId: 'dashboardId' // dynamicalle changed if dashboard is routed
+    dashboardId: 'dashboardId', // dinamically changed if a dashboard is routed
+    componentId: 'componentId' // dinamically changed if a component is routed
   }
-
+  // get messages from i18n to get breadcrums defined for each element in route
+  // this elements can be: Dashboards or components or single pages.
   const messages = store.getters.getMessages || []
+  const breadcrums = Object.keys(messages).length > 0 ? messages.en?.breadcrumb : {}
 
+  // apply breadcrums for each matched route
   to.matched.forEach(e => {
-    var breadcrums = Object.keys(messages).length > 0 ? messages.en?.breadcrumb : {}
-    for (const param in breadcrumbParams) {
-      if (param === 'dashboardId') {
-        if (to.params.dashboardId in breadcrums) {
-          to.meta.breadcrumbTextKey = to.params.dashboardId ? to.params.dashboardId : to.meta.breadcrumbTextKey
-        } else {
-          to.meta.breadcrumbTextKey = 'default'
-        }
-      } else if (e.meta.breadcrumbParam === param) {
-        to.params[e.meta.breadcrumbParam] = breadcrumbParams[param]
-      }
+    // detect element
+    var type = to.params?.formcode ? 'form' : to.params?.dashboardId ? 'dashboard' : 'other'
+    switch (type) {
+      case 'form':
+        to.meta.breadcrumbTextKey = to.params.formcode in breadcrums ? to.params.formcode : e.meta.breadcrumbTextKey
+        break
+      case 'dashboard':
+        console.log('DASHBOARD: ', to.params.dashboardId)
+        to.meta.breadcrumbTextKey = to.params.dashboardId in breadcrums ? to.params.dashboardId : 'default'
+        break
+      case 'other':
+        to.meta.breadcrumbTextKey = e.meta.breadcrumbTextKey
+        break
     }
   })
 }
@@ -54,19 +50,19 @@ const route = new Router({
         {
           path: '',
           name: 'login-form',
-          component: LoginForm
+          component: () => import('@/components/login/LoginForm')
         },
         {
           path: 'password',
           name: 'password-form',
-          component: LoginPasswordForm
+          component: () => import('@/components/login/LoginPasswordForm')
         }
       ]
     },
     {
       path: '/user',
       name: 'User',
-      component: User,
+      component: () => import('@/views/User'),
       meta: {
         private: true,
         breadcrumbTextKey: 'userAccount'
@@ -75,26 +71,26 @@ const route = new Router({
     {
       path: '/users',
       name: 'Users',
-      component: Users,
+      component: () => import('@/views/Users'),
       meta: {
         private: true,
         breadcrumbTextKey: 'users'
       }
     },
     {
-      path: '/admin',
-      name: 'Admin',
-      component: Admin,
+      path: '/AdminDashboards',
+      name: 'AdminDashboards',
+      component: () => import('@/views/Admin'),
       props: true,
       meta: {
         private: true,
-        breadcrumbTextKey: 'admin'
+        breadcrumbTextKey: 'AdminDashboards'
       }
     },
     {
       path: '/test',
       name: 'Test',
-      component: Test,
+      component: () => import('@/views/Test'),
       props: true,
       meta: {
         private: true,
@@ -102,9 +98,19 @@ const route = new Router({
       }
     },
     {
+      path: '/notifications',
+      name: 'Notifications',
+      component: () => import('@/views/Notifications'),
+      props: true,
+      meta: {
+        private: true,
+        breadcrumbTextKey: 'notifications'
+      }
+    },
+    {
       path: '/',
       name: 'Home',
-      component: Home,
+      component: () => import('@/views/Home'),
       meta: {
         private: true,
         breadcrumbTextKey: 'home'
@@ -113,7 +119,7 @@ const route = new Router({
     {
       path: '/dashboard',
       name: 'Dashboards',
-      component: Dashboard,
+      component: () => import('@/views/Dashboard'),
       meta: {
         private: true,
         breadcrumbTextKey: 'dashboard'
@@ -122,7 +128,7 @@ const route = new Router({
     {
       path: '/dashboard/:dashboardId',
       name: 'Dashboard',
-      component: Dashboard,
+      component: () => import('@/views/Dashboard'),
       props: (route) => ({
         edit: route.params.edit || route.params.id === 'new'
       }),
@@ -132,9 +138,9 @@ const route = new Router({
       }
     },
     {
-      path: '/forms/:formcode?/:dataoid?',
+      path: '/forms/:formcode/:dataoid?',
       name: 'Forms',
-      component: Form,
+      component: () => import('@/views/Forms'),
       meta: {
         private: true,
         breadcrumbTextKey: 'formcode'
@@ -165,6 +171,14 @@ route.beforeEach((to, from, next) => {
   } else {
     sessionStorage.setItem('prevRoute', from.path)
     next()
+  }
+  if (from === Router.START_LOCATION && sessionStorage.getItem('sessionToken')) {
+    // initial navigation after reloading and loaded, check and add Auth to the servers.
+    sessionStorage.setItem('isReloaded', 1)
+    // if (sessionStorage.getItem('messages') !== '') this.$i18n.locale=localStorage.Lang;
+    store.dispatch('setJWTToken', sessionStorage.getItem('sessionToken'))
+  } else {
+    sessionStorage.setItem('isReloaded', 0)
   }
   setBreadcrumbParams(to)
 })

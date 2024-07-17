@@ -55,11 +55,13 @@ export const updateData = async (formid, dataoid, body) => {
   const data = await response.data
   return data
 }
+
 export const resolveDataSource = async (body) => {
   const response = await api.platform.post('/forms/datasource', body)
   const data = await response.data
   return data
 }
+
 export default {
   loadEntities,
   loadFormsList,

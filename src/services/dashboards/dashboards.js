@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import messages from './lang'
 import { notifierFactory } from '@/utils/notifier'
+import { getResourcesByTag, addResourcesByTag } from '@/services/tags/tags'
 
 Vue.use(VueI18n)
 const i18n = new VueI18n(messages)
@@ -60,11 +61,15 @@ export const getDashboards = async (config = {}) => {
     { params: config },
     { notify }
   )
-  // generic filters
+  // generic filters using tags
   // if options contains filter key , then apply, if not just only identification.
   if (config.filter !== '') {
-    return dashboards.filter((d) => (d.identification !== 'gadget-dashboard') && (d.category === config.filter))
+    console.log(' TAG SYSTEM ENABLED: ', config.filter)
+    const resources = await getResourcesByTag(config.filter, 'Dashboard')
+    const resourcesList = resources.length > 0 ? resources.map(x => x.name) : []
+    return resourcesList.length > 0 ? dashboards.filter((d) => (resourcesList.includes(d.identification))) : []
   } else {
+    // no filter using tags
     return dashboards.filter((d) => d.identification !== 'gadget-dashboard')
   }
 }
@@ -98,6 +103,13 @@ export const createDashboard = async (body, config) => {
     ...config,
     notify
   })
+  // id tag system enable, after return dashboard, add dashboard to the tag system
+  if (config?.tag) {
+    console.log(' TAG SYSTEM ENABLED: ', config.tag)
+    const body = [{ name: config.tag, resourceId: dashboard.id }]
+    const resources = await addResourcesByTag(body)
+    console.log('createDashboard, add dashboard to tag system: ', config.tag, 'resource: ', resources)
+  }
   return dashboard
 }
 
