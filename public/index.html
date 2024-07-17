@@ -22,10 +22,10 @@
     </style>
     <% } %>   
     <% if (process.env.NODE_ENV === 'production'){ %>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://openlayers.org; font-src 'self'; img-src 'self' <%= process.env.VUE_APP_PLATFORM %> https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org data: "/>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://openlayers.org https://cdn.form.io; font-src 'self' <%= process.env.VUE_APP_PLATFORM %>; img-src 'self' <%= process.env.VUE_APP_PLATFORM %> https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org data: ; worker-src 'self' <%= process.env.VUE_APP_PLATFORM %>;"/>
     <!-- MAIN SCRIPTS PROD -->
     <script type="application/javascript" src="<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/scripts/vendor.js"></script>
-    <script type="application/javascript" src="<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/gridster.js"></script>
+    <script type="application/javascript" src="<%= process.env.VUE_APP_PLATFORM %>/controlpanel/static/dashboards/gridster.js"></script>    
     <style>
       /**
       * @license

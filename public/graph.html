@@ -1,0 +1,131 @@
+<html>
+
+<head>
+  <script type="text/javascript"
+    src="https://onesaitplatform.ucsd.edu/controlpanel/static/vendor/vis/vis.min.js"></script>
+  <style type="text/css">
+    #mynetwork {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="mynetwork"></div>
+
+  <script type="text/javascript">
+
+    /*let requestData = {
+      
+        nodes: [
+          {
+            id: 'urn:onesait:thing:8fd37cfa-f010-4645-bd3e-fd6ef87b4691',
+            label: 'ubuntu-QEMU-Virtual-Machine'
+          },
+          {
+            id: 'urn:onesait:thing:146317c5-cd72-4e8e-b878-eeb8c369a244',
+            label: 'derconnect-edge-8'
+          },
+          {
+            id: 'urn:onesait:thing:15dbc9bb-4f3b-488d-897a-d2926407aade',
+            label: 'Derconnect-Edge-1'
+          },
+          {
+            id: 'urn:onesait:thing:27070daf-3287-497a-a545-b8a5ff500c2b',
+            label: 'Derconnect-Edge-5'
+          },
+          {
+            id: 'urn:onesait:thing:33adfcf8-5930-4fd7-a4af-853b6a87d20b',
+            label: 'derconnect-edge-7'
+          }
+        ],
+        links: [
+          {
+            source: 'urn:onesait:thing:8fd37cfa-f010-4645-bd3e-fd6ef87b4691',
+            target: 'urn:onesait:thing:8fd37cfa-f010-4645-bd3e-fd6ef87b4691'
+          },
+          {
+            source: 'urn:onesait:thing:146317c5-cd72-4e8e-b878-eeb8c369a244',
+            target: 'urn:onesait:thing:15dbc9bb-4f3b-488d-897a-d2926407aade'
+          },
+          {
+            source: 'urn:onesait:thing:15dbc9bb-4f3b-488d-897a-d2926407aade',
+            target: 'urn:onesait:thing:27070daf-3287-497a-a545-b8a5ff500c2b'
+          },
+          {
+            source: 'urn:onesait:thing:27070daf-3287-497a-a545-b8a5ff500c2b',
+            target: 'urn:onesait:thing:33adfcf8-5930-4fd7-a4af-853b6a87d20b'
+          },
+          {
+            source: 'urn:onesait:thing:33adfcf8-5930-4fd7-a4af-853b6a87d20b',
+            target: 'urn:onesait:thing:146317c5-cd72-4e8e-b878-eeb8c369a244'
+          },
+          {
+            source: 'urn:onesait:thing:146317c5-cd72-4e8e-b878-eeb8c369a244',
+            target: 'urn:onesait:thing:33adfcf8-5930-4fd7-a4af-853b6a87d20b'
+          },
+          {
+            source: 'urn:onesait:thing:33adfcf8-5930-4fd7-a4af-853b6a87d20b',
+            target: 'urn:onesait:thing:27070daf-3287-497a-a545-b8a5ff500c2b'
+          },
+          {
+            source: 'urn:onesait:thing:27070daf-3287-497a-a545-b8a5ff500c2b',
+            target: 'urn:onesait:thing:15dbc9bb-4f3b-488d-897a-d2926407aade'
+          },
+          {
+            source: 'urn:onesait:thing:15dbc9bb-4f3b-488d-897a-d2926407aade',
+            target: 'urn:onesait:thing:146317c5-cd72-4e8e-b878-eeb8c369a244'
+          }
+        ]
+      
+    }*/
+
+    const mountGraphData = (rdata) => {
+
+      var data = {
+        nodes: rdata?.nodes ? new vis.DataSet(rdata.nodes.map(elem => { return { id: elem.id, title: elem.id, label: elem.label ? elem.label : elem.id, value: 10 } })) : new vis.DataSet([]),
+        edges: rdata?.links ? new vis.DataSet(rdata.links.map(elem => { return { from: elem.source, to: elem.target, arrows: "to", color: { color: "#808080" } } })) : new vis.DataSet([])
+      };
+      return data;
+    }
+
+    // create a network
+    const container = document.getElementById('mynetwork');
+
+    const options = {
+      nodes: {
+        shape: "dot",
+        scaling: {
+          min: 5,
+          max: 25,
+          label: {
+            min: 8,
+            max: 10,
+          },
+        },
+      },
+      interaction: {
+        dragNodes: true,
+        hover: true,
+        tooltipDelay: 10,
+        selectable: true
+      },
+      layout: { randomSeed: 2 }
+    };
+
+    // initialize your network!
+
+    let network = null;
+
+    window.addEventListener("message", function (event) {
+      delete network;
+      if (event.data) {
+        network = new vis.Network(container, mountGraphData(event.data), options);
+      }
+    })
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,153 @@
+{
+    "label": "Español",
+    "labelMobile": "ES",
+    "serverError": "Ha ocurrido un error inesperado en el servidor. Inténtalo de nuevo.",
+    "breadcrumb": {
+        "home": "Inicio",
+        "dashboard": "Escritorio",
+        "Admin": "Administración de Dashboards",
+		"AdminDashboards": "Administración de Dashboards",
+        "users": "Usuarios",
+        "editProfile": "Editar mi perfil",
+        "myUser": "Mi usuario",
+        "editUser": "Editar usuario",
+        "userAccount": "Cuenta de Usuario",       
+        "default": "Gestión de Dashboards",       
+        "notifications": "Administración de Notificaciones"
+    },
+    "login": {
+        "title": "Iniciar sesión",
+        "user": "Nombre de usuario",
+        "password": "Contraseña",
+        "submitButton": "Enviar",
+        "rules": {
+            "user": "Introduzca el usuario",
+            "password": "Introduzca la contaseña"
+        },
+        "logging": "Iniciando sesión...",
+        "loginErrorTitle": "Error de validación.",
+        "loginError": "La combinación usuario/contraseña no es valida.",
+        "forgotPassword": "¿Has olvidado tu contraseña?",
+        "keepMeLogged": "Mantener sesión iniciada",
+        "login": "Entrar",
+        "footerLinks": [
+            "faq",
+            "términos",
+            "condiciones"
+        ],
+        "social": {
+            "title": "Haz login con"
+        },
+        "register": {
+            "account": "¿No tienes cuenta todavía?",
+            "register": "Regístrate"
+        },
+        "app": {
+            "title": "Accediendo a la Aplicación...",
+            "description": "Está usted accediendo a la aplicación, estamos cargando el Entorno, en breves segundos será redirigido..."
+        }
+    },
+    "password": {
+        "title": "Restablecer contraseña",
+        "message": "Introduce una cuenta de correo electrónico vinculada al producto para continuar",
+        "email": "Correo electrónico",
+        "submitButton": "Enviar",
+        "goBack": "Volver",
+        "error": "Email no encontrado.",
+        "sending": "Enviando...",
+        "rules": {
+            "email": "Email no encontrado"
+        },
+        "emailSubmitted": "Hemos enviado un correo electrónico con instrucciones para poder restablecer su contraseña a:",
+        "done": "Finalizar",
+        "emailError": "No existe ninguna cuenta vinculada a este correo electrónico: "
+    },
+    "notifications": {
+        "popoverTitle": "Notificaciones"
+    },
+    "header": {
+        "user": {
+            "profile": "Perfil",
+            "account": "Cuenta",
+            "theme": "Seleccionar tema",
+            "logout": "Salir"
+        }
+    },
+    "navigation": {
+        "home": "Home",
+        "Admin": "Administración de Dashboards",
+		"AdminDashboards":"Administración de Dashboard",
+        "dashboards": "Dashboards",
+        "userFavorite": "Dashboard Favorito",       
+        "users": "Gestión de Usuarios",        
+        "notifications": "Notificaciones"
+    },
+    "filters": {
+        "showhide": "Mostrar/Ocultar Opciones",
+        "filters": "Filtros",
+        "favorites": "Favoritos",
+        "noFavorites": "No hay Favoritos",
+        "favorites_search": "Buscar Favorito",
+        "search": "Buscar Gadgets Favoritos",
+        "search_NoResults": "No se han encontrado Gadgets",
+        "save_dashboard": "Guardar Dashboard",
+        "view_dashboard": "Mis Dashboards",
+        "gadgets": "Gadgets",
+        "activeFilters": "Filtros activos:",
+        "ApplianceType_placeholder": "Seleccionar Tipo",
+        "ApplianceType": "Tipo de Dispositivo",
+        "datalink_dashboard": "Datalink: Conexiones entre Gadgets"
+    },
+    "user": {
+        "dashboardAdmin": {
+            "title": "Gestión de Dashboards",
+            "infoTitle": "Información de Dashboards",
+            "infoDescription": "Puede ver, crear, editar y borrar sus dashboards. Despés de actualizar la información, puede seleccionar un dashboars y mediante su enlace, puede ir a la visualización del Dashboard elegido. Gracias."
+        },
+        "testUnit": {
+            "title": "Gestión de Tests",
+            "infoTitle": "Información de test",
+            "infoDescription": "Puede generar y gestionar test contra la Aplicación WEB_APP (pendiente...)"
+        },
+        "account": {
+            "header": "Datos Personales",
+            "title": "Cambio de Contraseña del usuario",
+            "info": "Puede cambiar la contraseña , introduzca la nueva contraseña, y  envíe el formulario. Tras actualizarse le redireccionaremos a la página de donde venía. El siguiente login ya se hará con su nueva contraseña. Muchas gracias.",
+            "inputs": {
+                "user": "Usuario",
+                "password": "Nueva Contraseña",
+                "checkpassword": "Repetir Contraseña",
+                "send": "Modificar Usuario",
+                "sendPassword": "Modificar Contraseña",
+                "description": "Descrición",
+                "company": "Compañia/Institución",
+                "cancel": "Cancelar",
+                "role": "Rol",
+                "date": "Fecha",
+                "fullName": "Nombre completo",
+                "userName": "Nombre de usuario",
+                "email": "eMail"
+            },
+            "errors": {
+                "fullName": "por favor, Rellene el nombre completo",
+                "emailRequired": "Por favor, rellene email",
+                "emailIncorrect": "email incorrecto."
+            },
+            "validations": {
+                "newpassword": {
+                    "required": "Nueva Contraseña es Requerida",
+                    "pattern": "Por favor la contraseña debe tener al menos 8 caracteres (A-Z, a-z, números) y al menos 1 caracter especial."
+                },
+                "checkpassword": {
+                    "required": "Repetir Contraseña es requerida",
+                    "same": "Las dos contraseñas deben ser iguales, tener el mismo valor."
+                }
+            },
+            "notifications": {
+                "success_title": "La Contraseña ha sido modificada con éxito.",
+                "error_title": "Error al modificar la contraseña",
+                "error_msg": "Se ha producido un error, Repita el proceso o contacte con el administrador."
+            }
+        }
+    }
+}

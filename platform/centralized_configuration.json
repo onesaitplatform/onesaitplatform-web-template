@@ -1,0 +1,251 @@
+[
+  {
+    "realmId": "WEB_APP",
+    "title": "WEB_APP_TITLE",
+    "i18n": "WEB_APP_i18n",
+    "project": "WEB_APP_PROJECT",
+    "productInfo": {
+      "suite": "platform",
+      "product": "WEB_APP",
+      "productModule": " ",
+      "secondary": false,
+      "negative": false,
+      "simple": false,
+      "onesait": false,
+      "accentBlock": false
+    },
+    "secret": "SECRET",
+    "clientId": "WEB_APP_CLIENT",
+    "pluginsOpts": {
+      "filterDatasources": {}
+    },
+    "appVersion": 0,
+    "customization": {
+      "showFilters": true,
+      "showActiveFilters": true,
+      "showfavorites": false,
+      "user": {
+        "showTheme": false,
+        "showLanguage": true
+      },
+      "styles": {       
+      },
+      "login": {        
+        "mainLogo": {
+          "show": true,
+          "order": 1
+        },
+        "clientLogo": {
+          "file": "LOGO",
+          "show": false,
+          "order": 2
+        }
+      }
+    },
+    "globalFilters": [     
+    ],
+    "initialNavigation": [
+      {
+        "role": "Admin",
+        "type": "dashboard",
+        "id": "WEB_APP_HOME_DASHBOARD"
+      },      
+      {
+        "role": "User",
+        "type": "dashboard",
+        "id": "WEB_APP_HOME_DASHBOARD"
+      }
+    ],
+    "components": {
+      "definition": [
+        {
+          "id": "AdminDashboards",
+          "defaultOptions": {
+            "editMode": true,
+            "tag": "",
+            "datasources": true
+          }
+        },       
+        {
+          "id": "Notifications",
+          "defaultOptions": {
+            "API": {
+              "count": "/v1/notification/count/unread/",
+              "countAll": "/v1/notification/count/all/",
+              "list": "/v1/notification/last/",
+              "all": "/v1/notification/all/",
+              "unread": "/v1/notification/unread/",
+              "types": "/v1/notification/type/count/",
+              "newtypes": "/v1/notification/type/new/",
+              "status": "/v1/notification/status/count/",
+              "labels": "/v1/notification/label/",
+              "updatelabels": "/v1/notification/<notification_id>/labels",
+              "id": "/v1/notification/",
+              "reply": "/v1/notification/<notification_id>/messages/",
+              "close": "/v1/notification/<notification_id>/status/CLOSED/",
+              "update": "v1/notification/<notification_id>/read/",
+              "delete": "v1/notification/<notification_id>/",
+              "create": "v1/notification/"
+            },
+            "limit": 10,
+            "frequency": 60,
+            "replyLimit": 250,
+            "adminRole": "Admin"
+          }
+        },        
+        {
+          "id": "users",
+          "defaultOptions": {
+            "editMode": true
+          }
+        },
+        {
+          "id": "userAccount",
+          "defaultOptions": {
+            "extraFields": {
+              "description": "",
+              "company": "",
+              "phone": "",
+              "postalCode": ""
+            },
+            "readOnly": []
+          }
+        }
+      ],
+      "navigation": [
+        {
+          "role": "Admin",
+          "allowed": [
+            {
+              "id": "AdminDashboards"
+            },            
+            {
+              "id": "Notifications"
+            },            
+            {
+              "id": "users"
+            }
+          ]
+        },        
+        {
+          "role": "User",
+          "allowed": [
+            {
+              "id": "Notifications"
+            }
+          ]
+        }
+      ]
+    },
+    "navigation": {
+      "favorite": {
+        "icon": "home",
+        "dashboardId": "userFavorite",
+        "to": ""
+      },
+      "home": {
+        "icon": "home",
+        "dashboardId": "WEB_APP_HOME_DASHBOARD",
+        "to": "/dashboard/WEB_APP_HOME_DASHBOARD"
+      },      
+      "AdminDashboards": {
+        "icon": "pie-chart",
+        "componentId": "AdminDashboards",
+        "to": "/AdminDashboards"
+      },
+      "users": {
+        "icon": "user",
+        "componentId": "users",
+        "to": "/users"
+      },
+      "notifications": {
+        "icon": "notification",
+        "componentId": "Notifications",
+        "to": "/notifications"
+      }      
+    },
+    "gadgetTree": [
+      {
+        "id": 1,
+        "name": "bar",
+        "types": [
+          "bar",
+          "BarChart",
+          "mixed",
+          "timeseries",
+          "timeChart"
+        ],
+        "icon": "chart-bar",
+        "children": []
+      },
+      {
+        "id": 2,
+        "name": "line",
+        "types": [
+          "line",
+          "LineChart",
+          "area",
+          "mixed",
+          "timeseries"
+        ],
+        "icon": "chart-line",
+        "children": []
+      },
+      {
+        "id": 3,
+        "name": "circular",
+        "types": [
+          "pie",
+          "doughnut",
+          "rosetype"
+        ],
+        "icon": "pie-chart",
+        "children": []
+      },
+      {
+        "id": 4,
+        "name": "kpi",
+        "types": [
+          "kpi",
+          "kpis",
+          "GaugeChart",
+          "progress",
+          "carousel"
+        ],
+        "icon": "app",
+        "children": []
+      },
+      {
+        "id": 5,
+        "name": "table",
+        "types": [
+          "table"
+        ],
+        "icon": "table",
+        "children": []
+      },
+      {
+        "id": 6,
+        "name": "layout",
+        "types": [
+          "header",
+          "footer",
+          "info"
+        ],
+        "icon": "table",
+        "children": []
+      },
+      {
+        "id": 7,
+        "name": "Filters",
+        "types": [
+          "visualfilter",
+          "FilterSelector"
+        ],
+        "icon": "eye",
+        "children": []
+      }
+    ],
+    "hiddenDatasources": []
+  }
+]

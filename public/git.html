@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
+    <link rel="icon" type="image/x-icon" href="/web/favicon.ico">    
+
+    <title>Git Editor</title>
+    
+    <!-- MAIN SCRIPTS DEV -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <script src="https://onesaitplatform.ucsd.edu/controlpanel/static/vendor/git-editor/git-editor.umd.js"></script>  
+    <style>
+      #git-editor > section > div > div.platform-table-header > div.platform-table-header__title > h2 {
+			  display:none;
+		  }
+    </style>
+  
+    
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://openlayers.org; font-src 'self'; img-src 'self' https://onesaitplatform.ucsd.edu/ https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org data: "/>
+    <!-- MAIN SCRIPTS PROD -->
+    <script type="application/javascript" src="https://onesaitplatform.ucsd.edu/controlpanel/static/dashboards/scripts/vendor.js"></script>
+    <script type="application/javascript" src="https://onesaitplatform.ucsd.edu/controlpanel/static/dashboards/gridster.js"></script>
+     
+ 
+
+  </head>
+  <body>
+    <div style='min-width: 0px;'>
+      <div style="height: calc(100% - 400px); margin: 1rem">
+        <git-editor-app api-data lang="en" project-id="ab634554-ecbb-4fe7-8aaf" id="git-editor"></git-editor-app>
+      </div>
+    </div>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        document.querySelector('git-editor-app').apiData = {
+				baseUrl: urlParams.get('baseUrl'), //https://onesaitplatform.ucsd.edu/gitlab/api/v1
+				token: urlParams.get('token'), // token plataforma sin el Bearer
+				gitUrl: urlParams.get('gitUrl'),
+				gitToken: urlParams.get('gitToken'),
+				noTabs: "false",
+			}
+      document.querySelector('git-editor-app').lang = sessionStorage.getItem("currentLanguage");
+      if(urlParams.get('readOnly')){
+        document.querySelector('#git-editor > section > div > div.platform-table-header > div.platform-table-header__actions > ul > li:nth-child(4) > button').style='display:none'
+      }
+    </script>
+
+  </body>
+</html>
