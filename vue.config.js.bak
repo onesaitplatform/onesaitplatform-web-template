@@ -1,8 +1,5 @@
-// IF BALANCER DEFINED, USE IT , OTHERWISE USE STANDARD APP
-const BALANCER = process.env.VUE_APP_BALANCER ? process.env.VUE_APP_BALANCER : '/web/' + process.env.VUE_APP_APPLICATION + '/'
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? BALANCER : '/',
-
+  publicPath: process.env.NODE_ENV === 'production' ? '/web/MDP_APP/' : '/',
   chainWebpack: config => {
     const oneOfsMap = config.module.rule('scss').oneOfs.store
     oneOfsMap.forEach(item => {
