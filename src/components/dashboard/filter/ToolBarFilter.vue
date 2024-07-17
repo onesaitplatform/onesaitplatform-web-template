@@ -21,6 +21,9 @@
             <ods-tooltip  :content="$t('filters.datalink_dashboard')" :placement="'left'" v-if="editmode">
               <ods-button class="subheader-btn" :title="$t('filters.datalink_dashboard')" v-if="dashboardId" @click="openAddDatalinkModal(dashboardId)" type="neutral" :text="$t('filters.datalink_dashboard')"  :iconPosition="'right'" :icon="'ods-icon-sync'" :size="'medium'" :nativeType="'text'"></ods-button>
             </ods-tooltip>
+            <ods-tooltip  :content="'DATASOURCES'" :placement="'left'" v-if="editmode && datasourceEnabled">
+              <ods-button class="subheader-btn" :title="'datasources'" v-if="dashboardId" @click="openDatasource()" type="neutral" :text="'Datasources'"  :iconPosition="'right'" :icon="'ods-icon-database'" :size="'medium'" :nativeType="'text'"></ods-button>
+            </ods-tooltip>
             <ods-tooltip  :content="$t('filters.save_dashboard')" :placement="'left'" v-if="editmode">
               <ods-button class="subheader-btn" :title="$t('filters.save_dashboard')" v-if="dashboardId" @click="saveDashboard" type="neutral" :text="$t('filters.save_dashboard')"  :iconPosition="'right'" :icon="'ods-icon-save'" :size="'medium'" :nativeType="'text'"></ods-button>
             </ods-tooltip>
@@ -62,6 +65,10 @@ export default {
     AddDatalinkModal
   },
   props: {
+    options: {
+      type: Object,
+      default: () => {}
+    },
     dynFilters: { type: Array, required: true },
     showFilters: { type: Boolean, required: true },
     dashboardId: { type: String, required: true },
@@ -225,7 +232,7 @@ export default {
     },
     goToDashboards () {
       console.log('Go to Dashboards Section...')
-      this.$router.push({ name: 'Admin' })
+      this.$router.push({ name: 'AdminDashboards' })
     },
 
     goToDashboard (row) {
@@ -276,6 +283,9 @@ export default {
         })
         this.dashboardCurrentFilters = activeFilters
       }
+    },
+    openDatasource () {
+      this.$emit('show:datasources', this.dashboardId)
     }
   },
   computed: {
@@ -285,6 +295,11 @@ export default {
       getCustomization: 'getCurrentCustomization',
       getGlobalFilters: 'getGlobalFilters'
     }),
+
+    // get from dashboard options if the datasource drawer editor is enabled or not.
+    datasourceEnabled () {
+      return this.options?.datasources ? this.options.datasources : false
+    },
 
     getGadgetIcon: function () {
       return function (row) {

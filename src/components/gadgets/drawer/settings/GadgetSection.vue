@@ -1,33 +1,37 @@
 <template>
   <div class="gadget-section">
-    <ods-form-item class="ods-flex ods-flex-col ods-items-start ods-py-2" v-for="(param, i) in elements" :key="'settings-input-' + name + '-' + i" :label="!isCheckbox(param) && !isSection(param) ? param.title : ''" size="default">
+    <p v-if="desc" class="gadget-section_description">{{ desc }}</p>
+    <ods-form-item class="ods-flex ods-flex-col ods-items-start ods-py-2" :class="param.required ? 'is-required' : ''" v-for="(param, i) in elements" :key="'settings-input-' + name + '-' + i" :label="!isCheckbox(param) && !isSection(param) ? param.title : ''" size="default" :style="adjustDesc(param)">
        <!-- PARAMETERS -->
        <p v-if="!param.elements && !isRadio(param) && !isCheckbox(param) && !isSelect(param) && param.type !== 'input-text' && param.type !== 'input-number' && param.type !== 'ds-field' && param.type !== 'color-picker' && param.type !== 'autogenerate-id' && param.type !== 'model-selector'">type {{ param.type }} name {{ param.name }} label {{ param.title }}</p>
 
         <!-- INPUT -->
-        <ods-input v-if="param.type == 'input-text'" :value="param.value" @input="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;"/>
-
+        <ods-input v-if="param.type == 'input-text'" :value="param.value"  :detail="param.desc ? param.desc : ''" @input="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;"/>
         <!-- INPUT AUTOGENERATE-ID -->
         <ods-input v-if="param.type == 'autogenerate-id'" :disabled="true" :value="param.value" @input="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;"/>
 
         <!-- NUMBER -->
-        <ods-input type="number" v-if="param.type == 'input-number'" :min="param.min" :max="param.max" :precision="param.precision ? param.precision : 1" :value="param.value" @input="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;"/>
+        <ods-input type="number" v-if="param.type == 'input-number'" :min="param.min" :max="param.max" :precision="param.precision ? param.precision : 1" :value="param.value" :detail="param.desc ? param.desc : ''" @input="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;"/>
 
         <!-- COLOR PICKER -->
-        <ods-color-picker :predefine="predefinedColors" :name="param.value + '_color_' + i" v-if="param.type == 'color-picker'" v-bind="{ id: 'settings-input-' + param.name + '-' + i, label: param.name }" v-model="param.value" :show-alpha="true" :disabled="false" :value="param.value" :size="'default'" @change="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;"></ods-color-picker>
+        <ods-color-picker v-if="param.type == 'color-picker'" :predefine="predefinedColors" :name="param.value + '_color_' + i"  v-bind="{ id: 'settings-input-' + param.name + '-' + i, label: param.name }" v-model="param.value" :show-alpha="true" :disabled="false" :value="param.value" :size="'default'" @change="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;"></ods-color-picker>
+        <span v-if="param.desc && param.type == 'color-picker'" class="ods-input__detail detail_radio"> {{ param.desc ? param.desc : '' }}</span>
 
         <!-- RADIO -->
         <ods-radio-group  v-if="isRadio(param)"  :name="param.value + path + '_' + i" :multiple="false" v-model="param.value" @input="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" size="medium" :full-width="true">
           <ods-radio-button v-for="(item, radioIndex) in param.options" :key="item.value + path" v-bind="{id: 'settings-input-' + param.name + '-' + i + '_' + radioIndex, label: item.value}"></ods-radio-button>
         </ods-radio-group>
+        <span v-if="param.desc && isRadio(param)" class="ods-input__detail detail_radio"> {{ param.desc ? param.desc : '' }}</span>
 
-        <!-- CHECKBOX -->
-        <ods-checkbox v-if="isCheckbox(param)" :name="'settings-input-' + param.name + '-' + i" v-model="param.value" :multiple="false" v-bind="{ id: 'settings-input-' + param.name + '-' + i, label: param.title }" :key="'settings-input-' + param.name + '-' + i"  @change="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))"></ods-checkbox>
+        <!-- CHECKBOX TO SWITCH -->
+        <ods-switch v-if="isCheckbox(param)" :name="'settings-input-' + param.name + '-' + i" v-model="param.value"  :id="'settings-input-' + param.name + '-' + i" :label="param.title" :active-text="param.title" :key="'settings-input-' + param.name + '-' + i"  @change="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))"></ods-switch>
+        <span v-if="param.desc && isCheckbox(param)" class="ods-input__detail detail_checkbox"> {{ param.desc ? param.desc : '' }}</span>
 
         <!-- SELECT -->
         <ods-select v-if="isSelect(param)" v-model="param.value" :multiple="param.multiple" @change="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;">
             <ods-option v-for="item in param.options" :key="item.value" :label="item.text" :value="item.value">{{ item.text }}</ods-option>
         </ods-select>
+        <span v-if="param.desc && isSelect(param)" class="ods-input__detail detail_radio"> {{ param.desc ? param.desc : '' }}</span>
 
         <!-- SELECT DS -->
         <ods-select v-if="param.type == 'ds-field' || param.type == 'ds-field(ds[0].)'" v-model="param.value"  :multiple="param.multiple" :value="param.value" @change="(value) => ( $emit('update:settings', { name: param.name, 'value': value, path:path }))" style="width: 100%;">
@@ -60,6 +64,10 @@ export default {
   },
   props: {
     name: {
+      type: String,
+      default: ''
+    },
+    desc: {
       type: String,
       default: ''
     },
@@ -158,6 +166,11 @@ export default {
         i++
       }
       return [auxmodel]
+    },
+    adjustDesc (param) {
+      if (param?.desc && (this.isCheckbox(param) || this.isRadio(param) || this.isSelect(param) || param.type === 'color-picker' || param.type === 'ds-field' || param.type === 'ds-field(ds[0].)')) {
+        return { 'padding-bottom': '24px !important' }
+      }
     }
   },
   computed: {
@@ -234,4 +247,14 @@ export default {
 ::v-deep .ods-color-picker__panel {
     z-index: 99999 !important;
   }
+.detail_checkbox {
+  position: absolute;
+  left: 0;
+  top: 24px;
+}
+.detail_radio {
+  position: absolute;
+  left: 0;
+  top: 38px;
+}
 </style>

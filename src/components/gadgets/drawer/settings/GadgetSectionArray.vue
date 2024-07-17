@@ -1,5 +1,6 @@
 <template>
   <div v-show="changed" class="gadget-section-array">
+    <p v-if="desc" class="gadget-section-array_description">{{ desc }}</p>
     <div>
         <ods-row v-for="(arrayitem, index) in settings" v-bind:key="index" class="section-row">
           <ods-col>
@@ -27,6 +28,10 @@ export default {
   },
   props: {
     name: {
+      type: String,
+      default: ''
+    },
+    desc: {
       type: String,
       default: ''
     },

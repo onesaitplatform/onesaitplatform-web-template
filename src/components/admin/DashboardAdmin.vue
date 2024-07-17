@@ -1,9 +1,9 @@
 <template>
   <ods-module class="admin__module">
     <header class="admin__header">
-      <h1 class="ods-txt-title-200">{{ $t("user.dashboardAdmin.title") }}</h1>
-      <ods-button v-if="isEditMode" @click.native="openNewForm()" type="secondary" :icon="toggleInfo.icon" :icon-position="toggleInfo.iconPosition !== 'default' ? toggleInfo.iconPosition : null" :size="toggleInfo.size !== 'default' ? size : null"  ref="btnToogle" class="toggleBtn" >
-        <template v-if="toggleInfo.text">{{ toggleInfo.text }}</template>
+      <h1 class="ods-txt-title-200">{{ $t('title') }}</h1>
+      <ods-button v-if="isEditMode" @click.native="openNewForm()" type="secondary" :icon="toggleInfo.icon" :icon-Position="toggleInfo.iconPosition !== 'default' ? toggleInfo.iconPosition : null" :size="toggleInfo.size !== 'default' ? size : null"  ref="btnToogle" class="toggleBtn" >
+        <template >{{ $t('addDashboard') }}</template>
       </ods-button>
     </header>
     <!-- admin DATA SECTION -->
@@ -43,7 +43,7 @@
           <h3 class="ods-txt-title-200 ods-pb-3">
             {{ dashboardFormTitle }}
           </h3>
-          <p>{{ $t("user.dashboardAdmin.infoDescription") }}</p>
+          <p>{{ $t('infoDescription') }}</p>
           <settings ref="settings" :options="options" :dashboard="dashboardConfig" v-on="$listeners" :isNew="isNew" :edit="edit" :isValid="isValid" :buttonLoading="buttonLoading" @action:dashboard="nextStep" @action:closeSettings="closeSettings"  @validate="(validation) => validate(validation.isValid, validation.dashboard)"></settings>
         </section>
       </Transition>
@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import i18n from './lang'
 import {
   getDashboards,
   deleteDashboard,
@@ -71,6 +72,7 @@ import DashboardCard from '@/components/admin/DashboardCard'
 // import Settings from './settings/Settings'
 export default {
   name: 'DashboardAdmin',
+  i18n,
   components: {
     DashboardCard,
     DeleteModal,
@@ -90,20 +92,18 @@ export default {
       // default values
       loading: false,
       backgroundLoading: true,
-      info: 'DASHBOARD MANAGEMENT',
-      dashboardsDescription: 'Dashboards are loading...',
       count: 1,
       cardsIndex: 12,
       // toggleInfo Btn
       toggleInfo: {
         show: false,
-        text: 'Add Dashboard',
         size: 'default',
         icon: 'ods-icon-plus',
         iconPosition: 'left'
       },
       list: [], // main list of dashboards
       dashboards: [], // main list of dashboards from API
+      dashboardsImages: [], // main list of dashboards images from API
       dashboardFormTitle: '',
       deleteDataModal: {
         show: false,
@@ -131,7 +131,14 @@ export default {
     }
   },
   // WATCH ---
-  watch: {},
+  watch: {
+    dashboardsImages: {
+      handler (newImages, oldImages) {
+        if (newImages.length) this.asignDashboardsImages()
+      },
+      deep: true
+    }
+  },
 
   // DIRECTIVES ---
   directives: {
@@ -225,13 +232,12 @@ export default {
       var filter = ''
       this.loading = true
       if (this.options) {
-        console.log('OPTIONS ON GETDASHBOARD CALL: ', this.options)
-        filter = this.options.filter ?? ''
+        filter = this.options.tag ?? ''
       }
       try {
         const dashboards = await getDashboards({
           orderType: 'IDENTIFICATION_ASC',
-          includeImage: true,
+          includeImage: false,
           filter: filter
         })
         const favs = await getFavDashboards()
@@ -255,6 +261,45 @@ export default {
       } finally {
         this.getDashboards(false)
       }
+    },
+
+    async getDashboardsImages () {
+      var filter = ''
+      if (this.options) {
+        filter = this.options.tag ?? ''
+      }
+      try {
+        if (this.dashboardsImages.length) this.asignDashboardsImages()
+        else this.backgroundLoading = true
+
+        const response = await getDashboards({
+          orderType: 'IDENTIFICATION_ASC',
+          includeImage: true,
+          filter: filter
+        })
+        const dashboardImages = await response.map((dashboard) => {
+          return {
+            id: dashboard.id,
+            image: dashboard.image
+          }
+        })
+        this.dashboardsImages = dashboardImages
+        console.log('Images: ', this.dashboardImages)
+      } finally {
+        this.backgroundLoading = false
+      }
+    },
+
+    asignDashboardsImages () {
+      this.dashboards = this.dashboards.map((dashboard) => {
+        const element = this.dashboardsImages.find(
+          (el) => el.id === dashboard.id
+        )
+        return {
+          ...dashboard,
+          image: element.image || ''
+        }
+      })
     },
 
     async removeFavDashboard (id) {
@@ -313,8 +358,16 @@ export default {
     async createDashboard () {
       var that = this
       this.buttonLoading = true
+      var config = {}
+
+      // tag system
+      var tag = ''
+      if (this.options) {
+        tag = this.options.tag ?? ''
+        if (tag) config.tag = tag
+      }
       try {
-        const dashboard = await createDashboard(this.newDashboard)
+        const dashboard = await createDashboard(this.newDashboard, config)
         this.dashboard = dashboard.id
         this.dashboardConfig = dashboard
       } finally {
@@ -360,17 +413,18 @@ export default {
     // dashboard pagination in client for cards
     cards () {
       return this.dashboards.filter((d, i) => i < this.cardsIndex * this.count)
-    }
+    },
+    info () { return this.$t('title') || 'Dashboard Management' },
+    dashboardsDescription () { return this.dashboards.length > 0 ? this.$t('description') : this.$('wait') }
   },
   async created () {
     await this.getDashboards()
-    // await this.getDashboardsImages()
+    await this.getDashboardsImages()
   },
 
   // MOUNTED
   mounted () {
     console.log('Dashboard Admin Component ---> Loaded, Dashboards: ', this.dashboards)
-    if (this.dashboards.length === 0) { this.dashboardsDescription = 'Wait to load available dashboards, or create a new One.' }
     this.isNew = true
     this.edit = false
     this.openNewForm() // open new dashboard form by default
@@ -382,18 +436,19 @@ export default {
 <style lang="scss" scoped>
 .admin {
   &__module {
-    border: 1px solid var(--color-border-soft-divisor);
+    border: none;
   }
 
   &__header {
     @include txt-title-150;
     border-bottom: $border-size-200 solid var(--color-border-soft-divisor);
-    padding: $space-300;
+    padding: 1rem 1.8rem;
   }
 
   &__data {
     display: flex;
     height: auto;
+    min-height: 400px;
     width: 100%;
   }
 
@@ -406,7 +461,7 @@ export default {
   &__form-container__noInfo {
     width: 100%;
     height: 100%;
-    padding: $space-300;
+    padding: 0 1.5rem;
   }
 
   &__info {
@@ -443,7 +498,7 @@ export default {
   float: right;
   position: relative;
   right: -5px;
-  top: -25px;
+  top: -30px;
 }
 ::v-deep .ods-alert {
   margin: 12px 0px 24px 0px;
@@ -471,5 +526,7 @@ export default {
   font-size: 3rem;
   margin:1rem;
 }
-
+.form-footer {
+  padding-bottom: 24px;
+}
 </style>

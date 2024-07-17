@@ -1,7 +1,7 @@
 <template>
   <ods-module class="test__module">
     <header class="test__header">
-      <h1 class="ods-txt-title-200">{{ $t("user.testUnit.title") }}</h1>
+      <h1 class="test__title">{{ $t("user.testUnit.title") }}</h1>
       <ods-button
         @click.native="toggleInfo.show = !toggleInfo.show"
         type="secondary"
@@ -30,7 +30,7 @@
       <!-- INFORMATION SECTION -->
       <Transition name="slide-fade">
         <section v-if="toggleInfo.show" class="test__info">
-          <h3 class="ods-txt-title-200 ods-pb-3">
+          <h3 class="test__title ods-pb-3">
             {{ $t("user.testUnit.infoTitle") }}
           </h3>
           <p>{{ $t("user.testUnit.infoDescription") }}</p>
@@ -126,6 +126,10 @@ export default {
 .test {
   &__module {
     border: 1px solid var(--color-border-soft-divisor);
+  }
+
+  &__title {
+    @include txt-title-200;
   }
 
   &__header {

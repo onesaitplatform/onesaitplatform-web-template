@@ -9,6 +9,7 @@ const en = {
     name: 'Username',
     state: 'Status',
     category: 'Role',
+    fullName: 'Full name',
     email: 'email',
     description: 'Description',
     company: 'Company / Institution',

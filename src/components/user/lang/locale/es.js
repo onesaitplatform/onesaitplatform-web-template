@@ -9,6 +9,7 @@ const es = {
     name: 'Usuario',
     state: 'Estado',
     category: 'Rol',
+    fullName: 'Nombre completo',
     email: 'email',
     description: 'Descripcíon',
     company: 'Compañia / Institución',

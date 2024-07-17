@@ -8,7 +8,9 @@
       <ods-icon name="picture"></ods-icon>
     </div>
     <!--<img class="dashboard-card__image" v-else :src="dashboardImage" /> -->
-    <div v-else class="img-dashboard" :style="setImage"></div>
+    <div v-else style="overflow: hidden">
+      <div class="img-dashboard" :style="setImage"></div>
+    </div>
     <div class="dashboard-card__content">
       <div class="ods-flex ods-justify-between ods-items-center">
         <router-link
@@ -171,9 +173,10 @@ export default {
         height: '145px',
         backgroundImage: "url('" + this.dashboardImage + "')",
         backgroundRepeat: 'no-repeat',
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        borderBottom: '1px solid #d7dadc'
+        backgroundSize: 'cover',
+        backgroundPosition: 'top center',
+        borderBottom: '1px solid #d7dadc',
+        transition: 'all ease-in-out .4s'
       }
     },
     isEditMode () {
@@ -252,6 +255,9 @@ export default {
 
   &:hover {
     border-color: var(--color-bg-interactive-soft);
+  }
+  &:hover .img-dashboard{
+    transform: scale(1.25);
   }
 
   &__image {

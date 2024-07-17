@@ -96,13 +96,18 @@ export default {
 
       // LOGOUT IS DIFFERENT FOR KEYCLOAK AUTH APP OR REALM ONLY APP
       var platformUrl = process.env.VUE_APP_PLATFORM
+      const BALANCER = process.env.VUE_APP_BALANCER ? process.env.VUE_APP_BALANCER : ''
       if (process.env.VUE_APP_AUTH_TYPE === 'KEYCLOAK') {
         var keycloakRealmId = process.env.VUE_APP_KEYCLOAK_REALMID
         var keycloakApplication = process.env.VUE_APP_APPLICATION
         window.location.href = '/auth/realms/' + keycloakRealmId + '/protocol/openid-connect/logout?redirect_uri=' + platformUrl + '/web/' + keycloakApplication + '/'
       } else {
-        var webApplication = process.env.VUE_APP_APPLICATION
-        window.location.href = platformUrl + '/web/' + webApplication + '/login'
+        if (BALANCER) {
+          window.location.href = BALANCER + 'login'
+        } else {
+          var webApplication = process.env.VUE_APP_APPLICATION
+          window.location.href = platformUrl + '/web/' + webApplication + '/login'
+        }
       }
     }
   }

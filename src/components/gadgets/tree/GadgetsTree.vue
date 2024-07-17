@@ -2,7 +2,7 @@
   <div class="gadgets-tree">
     <slot name="header"></slot>
     <transition name="slide-fade">
-      <div class="ods-mt-3" v-if="(tab === 'custom' && datasource !== '') || tab !== 'custom'">
+      <div class="ods-mt-3" v-if="(tab === 'custom' && datasource !== '' && datasource.identification !== '#NEW') || tab !== 'custom'">
         <ods-input class="ods-my-2" v-model="filterValue" prefix-icon="ods-icon-search" :placeholder="$t('search')" clearable="clearable"></ods-input>
         <ods-tree class="ods-my-2" ref="tree" :data="tree" :props="{ children: 'children', label: 'name', disabled: 'disabled' }" draggable="draggable" :indent="8" node-key="id" :filter-node-method="filterGadgets" :default-expanded-keys="expandedKeys" :allow-drop="(draggingNode, dropNode) => false" @node-drag-start="(node, $event) => $emit('drag:gadget', getDraggedGadget(node.data.id, tab === 'custom' ? node.data.name : node.data.text), $event)">
           <template v-slot:default="{ node, data }"><span>
@@ -200,6 +200,9 @@ export default {
       if (!value) return true
       return data.name.indexOf(value) !== -1
     }
+  },
+  mounted () {
+    console.log('GADGETTREE: datasource: ', this.datasource, this.tab)
   }
 }
 </script>

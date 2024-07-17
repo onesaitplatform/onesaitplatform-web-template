@@ -420,11 +420,11 @@ export default {
         //   line-height: rem(20);
         // }
       }
-      &__expand-column {
-        .ods-table__expand-icon {
-          display: none;
-        }
-      }
+      // &__expand-column {
+        // .ods-table__expand-icon {
+        //  display: none;
+        // }
+      // }
 
       td.table-dropdown__col {
         .cell {
@@ -454,20 +454,20 @@ export default {
 
       tr.hover-row {
         > td {
-          // border-bottom: 1px solid var(--color-border-interactive);
+          border-bottom: 1px solid var(--color-border-interactive);
         }
       }
 
       tr.expanded:hover + tr {
         > td {
-          // background-color: var(--color-bg-hover-2);
-          // border-bottom: 1px solid var(--color-border-interactive);
+          background-color: var(--color-bg-hover-2);
+          border-bottom: 1px solid var(--color-border-interactive);
         }
       }
       .table-child {
         &.ods-table td:not(.ods-table__expanded-cell) {
-          // border: 0;
-          // color: var(--color-txt-secondary);
+          border: 0;
+          color: var(--color-txt-secondary);
         }
       }
     }

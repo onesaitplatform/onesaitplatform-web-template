@@ -48,7 +48,7 @@ export default {
         var that = this
         if (that.formcode != null && that.formcode.length > 0) {
           window.formId = that.formcode
-          if (that.dataoid != null && that.dataoid.length > 0 && that.dataoid !== 'null') {
+          if (that.dataoid != null && that.dataoid.length > 0) {
             that.initFromDataWithOid(that)
           } else {
             // show existing form without data

@@ -7,7 +7,7 @@ ods-main-navigation(:navigation="handleNavigation || {}" ref="navigation")
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { HTTP_PLATFORM } from '../../store/modules/http'
 import navigationConfig from '@/components/nav/config.json'
 import SuitesMenu from '@/components/header/SuitesMenu'
@@ -23,10 +23,14 @@ export default {
     return {
       favorite: '',
       navbackup: navigationConfig,
-      roleMenu: {}
+      roleMenu: {},
+      messages: null
     }
   },
   methods: {
+    ...mapActions([
+      'getI18nData'
+    ]),
     // GET FAVORITE INTERNAL ID
     async getUserFavorite () {
       var favDashboardApiEndPoint = ''
@@ -132,7 +136,6 @@ export default {
       getNavigation: 'getNavigation',
       isMultipleApp: 'isMultipleApp',
       getCurrentNavigation: 'getCurrentNavigation',
-      getLoad: 'getLoad',
       getCurrentApplication: 'getCurrentApplication',
       getCurrentCustomization: 'getCurrentCustomization',
       getUser: 'getUser',
@@ -143,7 +146,7 @@ export default {
     // get all navigation menu and check items allowed, then remove all not allowed items in menu and send to template
     async handleNavigation () {
       var sessionNav = ''
-      var allowedMenu = await this.getNavigation
+      var allowedMenu = this.getNavigation
       var roleMenu = this.getCurrentNavigation
       var showFavorites = true
       var customization = this.getCustomization || {}
@@ -157,8 +160,8 @@ export default {
 
       // components allowed
       var role = this.getUser ? this.getUser.role : null
-      var allowedComponents = this.getAllowedComponents || []
-      allowedComponents = allowedComponents.length > 0 ? allowedComponents.filter(x => x.role === role).map(y => y.components)[0].map(z => z.id) : []
+      const COMPONENTS = this.getAllowedComponents ? this.getAllowedComponents : {}
+      const allowedComponents = COMPONENTS ? COMPONENTS.navigation?.filter(x => x.role === role).map(y => y.allowed)[0].map(z => z.id) : []
 
       // control dashboard and components allowed
       if (!allowedMenu.length && !allowedComponents.length) {
@@ -280,7 +283,12 @@ export default {
   },
   watch: {
     '$i18n.locale': {
-      handler (val) {
+      async handler (val) {
+        console.log('APP IN i18n: ', this.i18n, this.$i18n.locale)
+        if (sessionStorage.getItem('isReloaded') === '1') {
+          const i18nPlatform = await this.getI18nData(this)
+          console.log('i18n: ', i18nPlatform)
+        }
         if (Object.keys(this.roleMenu).length !== 0) {
           // apply i18 tags on locale change
           const assignName = item => {
@@ -315,7 +323,7 @@ export default {
         } else {
           // DASHBOARD, check if dahboard is not in the nav list, then mark menu special.
           var routeParams = params
-          var navDashboard = document.querySelectorAll('.ods-main-nav__item-link > a[href*="/admin"]')[0] ? document.querySelectorAll('.ods-main-nav__item-link > a[href*="/admin"]')[0].closest('li') : null
+          var navDashboard = document.querySelectorAll('.ods-main-nav__item-link > a[href*="/AdminDashboards"]')[0] ? document.querySelectorAll('.ods-main-nav__item-link > a[href*="/AdminDashboards"]')[0].closest('li') : null
           if (!navDashboard) { return false }
           var found = false
           var dashboardItem = 'dashboard/' + routeParams.dashboardId
@@ -334,6 +342,12 @@ export default {
           }
         }
       }
+    }
+  },
+  created () {
+    this.isReloaded = sessionStorage.getItem('isReloaded')
+    if (this.isReloaded === '1') {
+      this.messages = JSON.parse(sessionStorage.getItem('messages'))
     }
   }
 }

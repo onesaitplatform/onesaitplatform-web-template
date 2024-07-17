@@ -2,7 +2,8 @@
   <ods-module class="users__module">
     <header class="users__header">
       <h1 class="ods-txt-title-200">{{ $t("title") }}</h1>
-      <ods-button  @click.native="toggleInfo.show = !toggleInfo.show" type="secondary" :autofocus="toggleInfo.autofocus" :disabled="toggleInfo.disabled" :loading="toggleInfo.loading" :icon="toggleInfo.icon" :icon-position="toggleInfo.iconPosition !== 'default' ? toggleInfo.iconPosition : null" :size="toggleInfo.size !== 'default' ? size : null"  ref="btnToogle" class="toggleBtn" >
+      <!-- not used now -->
+      <ods-button v-if="0" @click.native="toggleInfo.show = !toggleInfo.show" type="secondary" :autofocus="toggleInfo.autofocus" :disabled="toggleInfo.disabled" :loading="toggleInfo.loading" :icon="toggleInfo.icon" :icon-Position="toggleInfo.iconPosition !== 'default' ? toggleInfo.iconPosition : null" :size="toggleInfo.size !== 'default' ? size : null"  ref="btnToogle" class="toggleBtn" >
         <template v-if="toggleInfo.text">{{ toggleInfo.text }}</template>
       </ods-button>
     </header>
@@ -14,6 +15,18 @@
         <table-layout class="users-table ods-mt-6" pagination="client" :data="list" :page.sync="page" :pageSize.sync="pageSize" :minimumPageSize="10" :totalElements="totalElements" :fullHeight="false">
           <template v-slot:default="users">
             <ods-table :data="users.paginatedData">
+              <ods-table-column type="expand" label="Extra Info." width="80">
+                <template v-slot:default="{ row }">
+                  <div class="expanded">
+                    <ul v-if="row.extra">
+                      <li v-for="(item, key) in row.extra" :key="key" style="padding: 4px 8px; margin-bottom: 4px;">
+                        <b>{{key}}</b>:<span> {{ item }}</span>
+                      </li>
+                    </ul>
+                    <div v-else>No extra info.</div>
+                  </div>
+                </template>
+              </ods-table-column>
               <ods-table-column :label="$t('table.name')" prop="username"></ods-table-column>
               <ods-table-column :label="$t('table.autor')" prop="fullName" :show-overflow-tooltip="true" width="225px">
                 <template v-slot:default="{ row: user }"><span>{{ user.fullName | truncate(50,'...') }}</span></template>
@@ -78,7 +91,13 @@ export default {
     TableLayout
   },
   mixins: [TableLayoutCommons, FormatDateFilter],
-
+  props: {
+    options: {
+      type: Object,
+      default: () => {},
+      required: false
+    }
+  },
   // COMPONENT DATA ---
   data () {
     return {
@@ -146,7 +165,7 @@ export default {
 
   // MOUNTED
   mounted () {
-    console.log('Dashboard Users Unit Component ---> Loaded.')
+    console.log('Dashboard Users Unit Component ---> Loaded with options: ', this.options)
   }
 }
 </script>
@@ -158,18 +177,19 @@ export default {
 }
 .users {
   &__module {
-    border: 1px solid var(--color-border-soft-divisor);
+    border: none;
   }
 
   &__header {
     @include txt-title-150;
     border-bottom: $border-size-200 solid var(--color-border-soft-divisor);
-    padding: $space-300;
+    padding: 1rem 1.8rem;
   }
 
   &__data {
     display: flex;
     height: 100%;
+    min-height: 400px;
     min-height: 100%;
   }
 
@@ -180,7 +200,7 @@ export default {
 
   &__form-container__noInfo {
     width: 100%;
-    padding: $space-300;
+    padding: 0 1.5rem;
   }
 
   &__info {
@@ -289,5 +309,10 @@ export default {
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   opacity: 0;
+}
+
+.expanded {
+  margin: 0px;
+  padding: 12px;
 }
 </style>

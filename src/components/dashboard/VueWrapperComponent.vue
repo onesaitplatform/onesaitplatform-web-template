@@ -161,8 +161,7 @@ export default {
       api.disableEventEdit = function () {
         app.isolateScope().vm.dashboard.gridOptions.eventedit = false;
       };
-      api.disableToolBar = function () { 
-        console.log('disable toolbar...')         
+      api.disableToolBar = function () {         
         app.isolateScope().vm.dashboard.editButtonsIframe = {
           urlParameterButton: false,
           trashButton: false,
@@ -323,7 +322,7 @@ export default {
       appRootNode.setAttribute(
         "editmode",
         scope.editmode ? scope.editmode : "false"
-      );
+      )      
 
       if (i18n == true) {
         fetch(
@@ -437,10 +436,6 @@ export default {
     },
     initialDatalink: function (newVal) {
       // watch it
-      console.log(
-        "DASHBOARD INITIAL FILTERS APPLIED: ",
-        JSON.stringify(newVal)
-      );
       if (newVal.constructor === Object && Object.entries(newVal).length > 0) {
         this.setConfig(this.token, this.params, this.platformbase, newVal);
       }

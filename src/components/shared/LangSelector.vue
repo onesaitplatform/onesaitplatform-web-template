@@ -47,6 +47,12 @@ export default {
         }
       },
       immediate: true
+    },
+    '$i18n.locale': {
+      async handler (val) {
+        sessionStorage.setItem('currentLanguage', val)
+      },
+      immediate: true
     }
   }
 }

@@ -9,7 +9,7 @@
         <!-- GADGET PANE -->
         <ods-tab-pane :key="'sidebar-tab-gadgets'" class="ods-py-6" :label="$t('filters.gadgets')" v-if="editmode">
           <ods-scrollbar :wrapClass="'scrollbar-gadgetree'" :tag="'div'" :alwaysVisible="true" :wrapStyle="setHeight">
-            <gadgets ref="gadgets" v-bind="$attrs" v-on="$listeners" padding="0px 12px"></gadgets>
+            <gadgets ref="gadgets" v-bind="$attrs" v-on="$listeners" :options="options" padding="0px 12px"></gadgets>
           </ods-scrollbar>
          </ods-tab-pane>
         <!-- GLOBAL FILTERS PANE -->
@@ -50,12 +50,17 @@ export default {
     Gadgets
   },
   props: {
+    options: {
+      type: Object,
+      default: () => {}
+    },
     favorites: { type: Array, required: true, default () { return [] } },
     dynFilters: { type: Array, required: true },
     showFilters: { type: Boolean, required: true },
     dashboardId: { type: String, required: true },
     editmode: { type: Boolean, required: true },
-    location: { type: String, required: true }
+    location: { type: String, required: true },
+    close: { type: Boolean, required: false, default: false }
   },
   data () {
     return {
@@ -79,6 +84,11 @@ export default {
   watch: {
     filterText (val) {
       this.$refs.tree.filter(val)
+    },
+    close (val) {
+      if (val) {
+        this.isOpen = false
+      }
     },
     isOpen (nval) {
       if (nval) {

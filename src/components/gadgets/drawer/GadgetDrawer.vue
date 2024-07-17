@@ -3,7 +3,10 @@ drawer.gadget-drawer(
   v-model="visible"
   v-on="$listeners"
   v-bind="$attrs"
-  width="326px"
+  width="375px"
+  :type="'gadget'"
+  :title="'Gadget ' + title"
+  style="margin-top: -1px; border-top: 1px solid var(--color-border-soft-divisor);"
   showClose)
   template(slot="header")
     .header
@@ -48,7 +51,8 @@ export default {
       default: () => []
     }
   },
-
+  methods: {
+  },
   computed: {
     title () {
       return (
@@ -65,6 +69,6 @@ export default {
 <style lang="scss">
 .gadget-drawer {
   border-left: 1px solid var(--color-border-soft-divisor);
-  padding: 0 1rem 3rem 1.4rem;
+  padding: 0;
 }
 </style>

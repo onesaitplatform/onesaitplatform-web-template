@@ -8,8 +8,22 @@
         </span>
         <gadgets-tree v-loading="loading" :gadgets="getGadgetsTree(tab.name)" :tab="tab.name" :datasource="datasource" :tree="gadgetTree" v-on="$listeners" v-bind="$attrs">
           <template slot="header" v-if="tab.name === 'custom'">
-            <ods-select v-model="datasource" value-key="identification"  :filterable="true" select-label="Datasource" @change="(value) => $emit('add:datasource', { name: value.identification, refresh: 0, type: 'query' })">
-              <ods-option v-for="(d, i) in datasources" :key="`datasource-${d.identification}-${i}`" :value="d" :label="d.identification"></ods-option>
+            <ods-select v-model="datasource"  :filterable="true" :clearable="true" select-label="Datasource" @change="(value) => $emit('add:datasource', value !== null ? { name: value, refresh: 0, type: 'query' } : { name: '#NEW', refresh: 0, type: 'query' })">
+              <ods-option v-for="(d, i) in datasources" :key="`datasource-${d.identification}-${i}`" :value="d.identification">
+                <template>
+                  {{d.identification}} <br>
+                  <span style="font-size: 85%; color: #666">{{ d.description }}</span>
+                  <!-- <span class="edit-datasource"><i class="ods-icon-edit" style="font-size: 14px;font-weight: bold;"></i></span> -->
+                </template>
+              </ods-option>
+              <ods-option-group label="Options" v-if="datasourceEnabled">
+                <ods-option :value="null" :key="'datasource-#NEW1'">
+                  <template>
+                    New Datasource <br>
+                    <span style="font-size: 85%; color: #666">Create a New Datasource</span>
+                  </template>
+                </ods-option>
+              </ods-option-group>
             </ods-select>
           </template>
         </gadgets-tree>
@@ -44,6 +58,10 @@ export default {
     datasources: {
       type: Array,
       default: () => []
+    },
+    options: {
+      type: Object,
+      default: () => {}
     }
   },
 
@@ -54,8 +72,8 @@ export default {
       favGadgets: [],
       activeTab: 'custom',
       tabs: [{ name: 'default' }, { name: 'custom' }, { name: 'fav' }],
-      datasource: '',
       loading: true,
+      datasource: {},
       // gadget tree backUp
       backUpTree: [
         {
@@ -122,6 +140,10 @@ export default {
     ...mapGetters({
       getCurrentGadgetsTree: 'getCurrentGadgetsTree'
     }),
+    // get from dashboard options if the datasource drawer editor is enabled or not.
+    datasourceEnabled () {
+      return this.options?.datasources ? this.options.datasources : false
+    },
     // gadget tree initial configuration can be a backUp or centralized configuration.z
     gadgetTree () {
       var that = this
@@ -228,6 +250,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.ods-select-dropdown__item { height: auto;}
+.ods-select-dropdown__item .edit-datasource {
+  position: absolute;
+  right: 14px;
+  top: 18px;
+  visibility: hidden;
+}
+.ods-select-dropdown__item:hover .edit-datasource {
+  visibility: visible;
+}
 .gadgets {
   font-size: rem(12);
   ::v-deep .ods-tree {

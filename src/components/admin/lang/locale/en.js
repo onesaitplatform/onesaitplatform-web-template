@@ -1,4 +1,10 @@
 const en = {
+  title: 'Dashboard Management',
+  infoTitle: 'Dashboard Info.',
+  infoDescription: 'You can view, create, update or remove personal dashboards. After updating dashboards, you can view a dashboard using his own link and then you will redirect to the Dashboard´s page. Thank you.',
+  addDashboard: 'New Dashboard',
+  wait: 'Wait to load available dashboards, or create a new One.',
+  description: 'Loading Dashboards...',
   modal: {
     duplicateConfirmTitle: 'Duplicate dashboard ',
     deleteDashboardConfirmTitle: 'Are you sure to delete this dashboard?',

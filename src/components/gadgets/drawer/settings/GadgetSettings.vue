@@ -14,15 +14,20 @@
           </ods-form-item>
           <ods-form-item class="ods-py-1" :label="$t('datasource')">
             <ods-select v-model="datasource_"  @change="(value) => $emit('update:datasource', { name: value.identification, refresh: 0, type: 'query' })">
-              <ods-option v-for="(d,index) in datasources" :key="`datasource-${d.identification}` + index " :value="d" :label="d.identification"></ods-option>
+              <ods-option v-for="(d,index) in datasources" :key="`datasource-${d.identification}` + index " :value="d" >
+                <template>
+                  {{d.identification}} <br>
+                  <span style="font-size: 85%; color: #666">{{ d.description }}</span>
+                </template>
+              </ods-option>
             </ods-select>
           </ods-form-item>
         </div>
         <!-- GADGET´S SECTIONS-->
         <ods-accordion v-model="mainSections" :accordion="false" :size="size !== 'default' ? size : null">
           <ods-accordion-item v-for="section in sections_" :key="section.name" :name="section.name" :title="Capitalize(section.title)">
-            <gadget-section v-if="section.type ==='section'" :mainSettings="settings" :settings="settings.parameters[section.name]" :elements="section.elements" :path="section.name" :name="section.name" :datasource="datasource" :datasources="datasources" :datasourceFields="datasourceFields" v-on="$listeners" ></gadget-section>
-            <gadget-section-array v-if="section.type === 'section-array'" :path="section.name" :mainSettings="settings" :settings="settings.parameters[section.name]" :elements="section.elements" :name="section.name" :datasource="datasource" :datasources="datasources" :datasourceFields="datasourceFields" v-on="$listeners" ></gadget-section-array>
+            <gadget-section v-if="section.type ==='section'" :mainSettings="settings" :settings="settings.parameters[section.name]" :elements="section.elements" :path="section.name" :name="section.name" :desc="section.desc" :datasource="datasource" :datasources="datasources" :datasourceFields="datasourceFields" v-on="$listeners" ></gadget-section>
+            <gadget-section-array v-if="section.type === 'section-array'" :path="section.name" :mainSettings="settings" :settings="settings.parameters[section.name]" :elements="section.elements" :name="section.name" :desc="section.desc" :datasource="datasource" :datasources="datasources" :datasourceFields="datasourceFields" v-on="$listeners" ></gadget-section-array>
           </ods-accordion-item>
         </ods-accordion>
       </ods-form>
@@ -183,7 +188,7 @@ export default {
           }
         } else {
           if (m.type === 'section') {
-            console.log('SECTION OR SECTION ARRAY: ', m.elements, params[m.name])
+            console.log('SECTION OR SECTION ARRAY: ', m.elements, params[m.name], ' DESC: ', m.desc)
             that.recSetParams(m.elements, params[m.name])
           } else {
             m.value = [{}]
@@ -258,8 +263,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.ods-select-dropdown__item { height: auto;}
+
 .gadget-settings {
-  padding-right: rem(16);
+  padding: 0 1rem 3rem 1.4rem;
   margin-bottom: rem(64);
   &__group {
     border-bottom: 1px solid var(--color-border-hard-divisor);
@@ -274,7 +281,6 @@ export default {
       text-align: left;
     }
   }
-
   ::v-deep .ods-tree {
     &-node {
       margin-top: rem(16);

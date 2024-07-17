@@ -57,9 +57,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import {
-  member
-} from '@/services/login/login'
+import { member } from '@/services/login/login'
 import { HTTP_PLATFORM } from '../../store/modules/http'
 export default {
   name: 'LoginForm',
