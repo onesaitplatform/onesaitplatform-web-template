@@ -74,6 +74,9 @@ export default {
                   that.buildForm.on('redirect', function (redirecto) {
                     that.checkRedirect(redirecto, that)
                   })
+                  that.buildForm.on('historyback', function (redirecto) {
+                    that.$router.back()
+                  })
                   that.buildForm.on('submit', function (submission) {
                     createData(
                       that.formcode,
@@ -149,6 +152,9 @@ export default {
           }
           that.buildForm.on('redirect', function (redirecto) {
             that.$router.push({ path: `/forms/${redirecto.formcode}/${redirecto.dataoid}` })
+          })
+          that.buildForm.on('historyback', function (redirecto) {
+                    that.$router.back()
           })
           that.buildForm.on('submit', function (submission) {
             if (window.buttonJustCreate) {
@@ -241,6 +247,9 @@ export default {
           }
           that.buildForm.on('redirect', function (redirecto) {
             that.$router.push({ path: `/forms/${redirecto.formcode}/${redirecto.dataoid}` })
+          })
+          that.buildForm.on('historyback', function (redirecto) {
+                    that.$router.back()
           })
           that.buildForm.on('submit', function (submission) {
             updateData(
